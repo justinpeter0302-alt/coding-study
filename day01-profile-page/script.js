@@ -17,6 +17,32 @@ const addInterestButton = document.querySelector("#addInterestButton");
 // 找到兴趣区域的提示信息。
 const interestMessage = document.querySelector("#interestMessage");
 
+// 用数组保存兴趣数据。以后页面显示什么，优先看数据里有什么。
+const interests = ["Vibe coding", "弹吉他", "健身"];
+
+// 根据 interests 数组重新生成页面上的兴趣列表。
+function renderInterests() {
+  // 先清空列表，避免重复渲染出多份 li。
+  interestList.innerHTML = "";
+
+  // forEach 会遍历数组里的每一项。
+  interests.forEach((interest, index) => {
+    const listItem = document.createElement("li");
+    const interestText = document.createElement("span");
+    const deleteButton = document.createElement("button");
+
+    interestText.textContent = interest;
+    deleteButton.textContent = "删除";
+    deleteButton.type = "button";
+    deleteButton.className = "delete-interest";
+    // dataset 可以把数据藏在 HTML 元素上，这里保存它在数组里的位置。
+    deleteButton.dataset.index = index;
+
+    listItem.append(interestText, deleteButton);
+    interestList.append(listItem);
+  });
+}
+
 // 当用户点击按钮时，执行里面的代码。
 themeButton.addEventListener("click", () => {
   // toggle 会自动切换 dark class：没有就添加，有就移除。
@@ -40,7 +66,7 @@ saveNameButton.addEventListener("click", () => {
   nameInput.value = "";
 });
 
-// 当用户点击“添加兴趣”按钮时，创建一个新的列表项。
+// 当用户点击“添加兴趣”按钮时，先更新数组，再重新渲染列表。
 addInterestButton.addEventListener("click", () => {
   const newInterest = interestInput.value.trim();
 
@@ -49,21 +75,9 @@ addInterestButton.addEventListener("click", () => {
     return;
   }
 
-  // createElement 可以创建一个新的 HTML 元素。
-  const listItem = document.createElement("li");
-  const interestText = document.createElement("span");
-  const deleteButton = document.createElement("button");
-
-  // 给新元素设置文字和属性。
-  interestText.textContent = newInterest;
-  deleteButton.textContent = "删除";
-  deleteButton.type = "button";
-  deleteButton.className = "delete-interest";
-
-  // append 可以把子元素放进父元素里。
-  listItem.append(interestText, deleteButton);
-  interestList.append(listItem);
-
+  // push 会把新内容添加到数组末尾。
+  interests.push(newInterest);
+  renderInterests();
   interestMessage.textContent = `已添加兴趣：${newInterest}`;
   interestInput.value = "";
 });
@@ -78,10 +92,15 @@ interestList.addEventListener("click", (event) => {
     return;
   }
 
-  // closest("li") 会向上找到离按钮最近的 li。
-  const listItem = clickedElement.closest("li");
-  const interestText = listItem.querySelector("span").textContent;
+  // Number 会把字符串形式的下标转成数字。
+  const interestIndex = Number(clickedElement.dataset.index);
+  const interestText = interests[interestIndex];
 
-  listItem.remove();
+  // splice 会从数组里删除指定位置的数据。
+  interests.splice(interestIndex, 1);
+  renderInterests();
   interestMessage.textContent = `已删除兴趣：${interestText}`;
 });
+
+// 页面刚打开时，先把默认兴趣渲染出来。
+renderInterests();
