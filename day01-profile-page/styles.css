@@ -1,7 +1,9 @@
+/* 所有元素都使用 border-box，方便计算宽度和间距。 */
 * {
   box-sizing: border-box;
 }
 
+/* body 是整个页面的基础样式：字体、文字颜色和背景色。 */
 body {
   margin: 0;
   font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -9,6 +11,7 @@ body {
   background: #f6f7f9;
 }
 
+/* .page 用 flex 把个人介绍卡片放到页面中间。 */
 .page {
   min-height: 100vh;
   display: flex;
@@ -17,6 +20,7 @@ body {
   padding: 32px 16px;
 }
 
+/* .profile 是页面主体卡片，负责限制宽度和提供白色背景。 */
 .profile {
   width: min(880px, 100%);
   padding: 40px;
@@ -25,6 +29,7 @@ body {
   background: #ffffff;
 }
 
+/* 小标题文字，用来提示当前练习阶段。 */
 .eyebrow {
   margin: 0 0 12px;
   color: #4b6bfb;
@@ -41,6 +46,7 @@ h2 {
   font-size: 20px;
 }
 
+/* 简介文字需要更舒服的行高，方便阅读。 */
 .intro {
   max-width: 620px;
   margin: 16px 0 28px;
@@ -49,6 +55,7 @@ h2 {
   line-height: 1.7;
 }
 
+/* grid 用来把两张说明卡片排成两列。 */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -56,6 +63,7 @@ h2 {
   margin-bottom: 28px;
 }
 
+/* article 是每一张说明卡片的外观。 */
 article {
   padding: 20px;
   border: 1px solid #e6e8ef;
@@ -69,6 +77,7 @@ article p {
   line-height: 1.6;
 }
 
+/* flex-wrap 允许兴趣标签在空间不足时自动换行。 */
 .interest-list {
   display: flex;
   flex-wrap: wrap;
@@ -85,6 +94,7 @@ article p {
   background: #edf1ff;
 }
 
+/* button 是切换主题的按钮样式。 */
 button {
   min-height: 44px;
   padding: 0 18px;
@@ -96,10 +106,12 @@ button {
   cursor: pointer;
 }
 
+/* 当鼠标放到按钮上时，颜色变深一点，提示它可以点击。 */
 button:hover {
   background: #2446bd;
 }
 
+/* JavaScript 会给 body 添加 dark class，下面这些规则负责深色主题。 */
 body.dark {
   color: #f3f6fb;
   background: #12151c;
@@ -125,6 +137,7 @@ body.dark .interest-list li {
   background: #2b3a63;
 }
 
+/* 当屏幕宽度小于 640px 时，页面进入手机布局。 */
 @media (max-width: 640px) {
   .profile {
     padding: 28px 20px;
