@@ -125,10 +125,38 @@ article p {
 }
 
 .interest-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 12px;
   border-radius: 8px;
   color: #2541b2;
   background: #edf1ff;
+}
+
+/* 删除按钮放在兴趣标签内部，所以尺寸比普通按钮更小。 */
+.delete-interest {
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid #c7d2ff;
+  color: #2541b2;
+  background: #ffffff;
+  font-size: 14px;
+}
+
+.delete-interest:hover {
+  color: #ffffff;
+  background: #2541b2;
+}
+
+/* 添加兴趣的输入区域，结构和修改名字区域类似。 */
+.interest-editor {
+  margin-bottom: 28px;
+}
+
+.interest-actions {
+  display: flex;
+  gap: 10px;
 }
 
 /* button 是切换主题的按钮样式。 */
@@ -175,6 +203,16 @@ body.dark .interest-list li {
   background: #2b3a63;
 }
 
+body.dark .delete-interest {
+  border-color: #4b5f93;
+  color: #dce5ff;
+  background: #1b202b;
+}
+
+body.dark .delete-interest:hover {
+  background: #2f57eb;
+}
+
 body.dark input {
   border-color: #3d4658;
   color: #f3f6fb;
@@ -196,6 +234,10 @@ body.dark input {
   }
 
   .name-actions {
+    flex-direction: column;
+  }
+
+  .interest-actions {
     flex-direction: column;
   }
 }

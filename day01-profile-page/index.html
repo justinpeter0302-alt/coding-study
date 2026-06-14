@@ -43,11 +43,30 @@
 
         <h2>我的兴趣</h2>
         <!-- ul 是无序列表，li 是列表里的每一项。 -->
-        <ul class="interest-list">
-          <li>Vibe coding</li>
-          <li>弹吉他</li>
-          <li>健身</li>
+        <ul id="interestList" class="interest-list">
+          <li>
+            <span>Vibe coding</span>
+            <button class="delete-interest" type="button">删除</button>
+          </li>
+          <li>
+            <span>弹吉他</span>
+            <button class="delete-interest" type="button">删除</button>
+          </li>
+          <li>
+            <span>健身</span>
+            <button class="delete-interest" type="button">删除</button>
+          </li>
         </ul>
+
+        <!-- 这个区域用来练习动态添加列表项。 -->
+        <div class="interest-editor">
+          <label for="interestInput">添加新的兴趣</label>
+          <div class="interest-actions">
+            <input id="interestInput" type="text" placeholder="例如：阅读" />
+            <button id="addInterestButton" type="button">添加兴趣</button>
+          </div>
+          <p id="interestMessage" class="message">输入兴趣后，可以把它加入列表。</p>
+        </div>
 
         <!-- id="themeButton" 会被 script.js 用来找到这个按钮。 -->
         <button id="themeButton" type="button">切换主题</button>
