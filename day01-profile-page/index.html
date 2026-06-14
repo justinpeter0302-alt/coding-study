@@ -14,10 +14,20 @@
       <!-- section 表示页面中的一个独立内容块，这里是一张个人介绍卡片。 -->
       <section class="profile">
         <p class="eyebrow">Day 01</p>
-        <h1>你好，我是 乐观积极自信</h1>
+        <h1>你好，我是 <span id="displayName">乐观积极自信</span></h1>
         <p class="intro">
           我正在从 0 开始学习全栈开发，目标是学会用 AI 协作完成真实项目。
         </p>
+
+        <!-- 这个区域用来练习输入框、按钮和 JavaScript 读取用户输入。 -->
+        <div class="name-editor">
+          <label for="nameInput">修改页面名字</label>
+          <div class="name-actions">
+            <input id="nameInput" type="text" placeholder="输入新的名字" />
+            <button id="saveNameButton" type="button">保存名字</button>
+          </div>
+          <p id="nameMessage" class="message">输入名字后，点击按钮试试看。</p>
+        </div>
 
         <!-- article 适合表达一块相对完整的信息，比如一张说明卡片。 -->
         <div class="info-grid">

@@ -55,6 +55,43 @@ h2 {
   line-height: 1.7;
 }
 
+/* 这个区域包住输入框和保存按钮，用来练习表单交互。 */
+.name-editor {
+  margin-bottom: 28px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+/* 输入框和按钮横向排列，形成一个简单的操作区。 */
+.name-actions {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  min-height: 44px;
+  flex: 1;
+  padding: 0 12px;
+  border: 1px solid #cfd6e4;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+input:focus {
+  border-color: #2f57eb;
+  outline: 3px solid #dfe6ff;
+}
+
+.message {
+  margin: 8px 0 0;
+  color: #5f6368;
+  font-size: 14px;
+}
+
 /* grid 用来把两张说明卡片排成两列。 */
 .info-grid {
   display: grid;
@@ -123,7 +160,8 @@ body.dark .profile {
 }
 
 body.dark .intro,
-body.dark article p {
+body.dark article p,
+body.dark .message {
   color: #b9c2d0;
 }
 
@@ -135,6 +173,12 @@ body.dark article {
 body.dark .interest-list li {
   color: #dce5ff;
   background: #2b3a63;
+}
+
+body.dark input {
+  border-color: #3d4658;
+  color: #f3f6fb;
+  background: #151a24;
 }
 
 /* 当屏幕宽度小于 640px 时，页面进入手机布局。 */
@@ -149,5 +193,9 @@ body.dark .interest-list li {
 
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .name-actions {
+    flex-direction: column;
   }
 }
