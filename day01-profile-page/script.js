@@ -17,8 +17,36 @@ const addInterestButton = document.querySelector("#addInterestButton");
 // 找到兴趣区域的提示信息。
 const interestMessage = document.querySelector("#interestMessage");
 
-// 用数组保存兴趣数据。以后页面显示什么，优先看数据里有什么。
-const interests = ["Vibe coding", "弹吉他", "健身"];
+// localStorage 只能保存字符串，所以我们用一个固定 key 找到兴趣数据。
+const interestsStorageKey = "day01-interests";
+// 默认兴趣用于第一次打开页面，或者本地没有保存数据时。
+const defaultInterests = ["Vibe coding", "弹吉他", "健身"];
+// 用数组保存兴趣数据。let 允许我们后面把它替换成本地读取到的数据。
+let interests = loadInterests();
+
+// 从浏览器本地读取兴趣数组。
+function loadInterests() {
+  const savedInterests = localStorage.getItem(interestsStorageKey);
+
+  // 如果本地没有保存过数据，就使用默认兴趣。
+  if (savedInterests === null) {
+    return defaultInterests;
+  }
+
+  try {
+    // JSON.parse 可以把 JSON 字符串还原成 JavaScript 数组。
+    return JSON.parse(savedInterests);
+  } catch {
+    // 如果保存的数据坏掉了，就回到默认兴趣，避免页面打不开。
+    return defaultInterests;
+  }
+}
+
+// 把当前兴趣数组保存到浏览器本地。
+function saveInterests() {
+  // JSON.stringify 可以把数组转换成 localStorage 能保存的字符串。
+  localStorage.setItem(interestsStorageKey, JSON.stringify(interests));
+}
 
 // 根据 interests 数组重新生成页面上的兴趣列表。
 function renderInterests() {
@@ -77,6 +105,7 @@ addInterestButton.addEventListener("click", () => {
 
   // push 会把新内容添加到数组末尾。
   interests.push(newInterest);
+  saveInterests();
   renderInterests();
   interestMessage.textContent = `已添加兴趣：${newInterest}`;
   interestInput.value = "";
@@ -98,6 +127,7 @@ interestList.addEventListener("click", (event) => {
 
   // splice 会从数组里删除指定位置的数据。
   interests.splice(interestIndex, 1);
+  saveInterests();
   renderInterests();
   interestMessage.textContent = `已删除兴趣：${interestText}`;
 });
