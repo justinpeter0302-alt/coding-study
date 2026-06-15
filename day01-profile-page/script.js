@@ -93,8 +93,8 @@ themeButton.addEventListener("click", () => {
   document.body.classList.toggle("dark");
 });
 
-// 当用户点击“保存名字”按钮时，读取输入框内容并更新页面。
-saveNameButton.addEventListener("click", () => {
+// 保存名字的具体逻辑，按钮点击和回车提交都会调用它。
+function saveName() {
   // value 表示输入框里的文字，trim 会去掉前后的空格。
   const newName = nameInput.value.trim();
 
@@ -108,10 +108,10 @@ saveNameButton.addEventListener("click", () => {
   displayName.textContent = newName;
   nameMessage.textContent = `名字已更新为：${newName}`;
   nameInput.value = "";
-});
+}
 
-// 当用户点击“添加兴趣”按钮时，先更新数组，再重新渲染列表。
-addInterestButton.addEventListener("click", () => {
+// 添加兴趣的具体逻辑，按钮点击和回车提交都会调用它。
+function addInterest() {
   const newInterest = interestInput.value.trim();
 
   if (newInterest === "") {
@@ -136,6 +136,30 @@ addInterestButton.addEventListener("click", () => {
   renderInterests();
   interestMessage.textContent = `已添加兴趣：${newInterest}`;
   interestInput.value = "";
+}
+
+// 当用户点击“保存名字”按钮时，读取输入框内容并更新页面。
+saveNameButton.addEventListener("click", () => {
+  saveName();
+});
+
+// 当用户在名字输入框按下 Enter 时，也保存名字。
+nameInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    saveName();
+  }
+});
+
+// 当用户点击“添加兴趣”按钮时，先更新数组，再重新渲染列表。
+addInterestButton.addEventListener("click", () => {
+  addInterest();
+});
+
+// 当用户在兴趣输入框按下 Enter 时，也添加兴趣。
+interestInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    addInterest();
+  }
 });
 
 // 事件委托：把点击监听放在 ul 上，统一处理所有删除按钮。
