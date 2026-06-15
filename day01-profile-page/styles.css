@@ -225,6 +225,18 @@ button:hover {
   background: #4b5565;
 }
 
+/* 危险按钮用于清空数据这类需要谨慎的操作。 */
+.danger-button {
+  border: 1px solid #f1b8b3;
+  color: #b3261e;
+  background: #fff7f6;
+}
+
+.danger-button:hover {
+  color: #ffffff;
+  background: #b3261e;
+}
+
 /* hidden 用来临时隐藏元素，比如未进入编辑状态时隐藏“取消编辑”。 */
 .hidden {
   display: none;
@@ -289,6 +301,17 @@ body.dark .secondary-button {
 
 body.dark .secondary-button:hover {
   background: #4b5565;
+}
+
+body.dark .danger-button {
+  border-color: #8c3f39;
+  color: #ffb4ab;
+  background: #2a1715;
+}
+
+body.dark .danger-button:hover {
+  color: #ffffff;
+  background: #b3261e;
 }
 
 /* 当屏幕宽度小于 640px 时，页面进入手机布局。 */

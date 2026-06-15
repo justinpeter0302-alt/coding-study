@@ -18,6 +18,8 @@ const interestInput = document.querySelector("#interestInput");
 const addInterestButton = document.querySelector("#addInterestButton");
 // 找到重置兴趣的按钮。
 const resetInterestsButton = document.querySelector("#resetInterestsButton");
+// 找到清空兴趣的按钮。
+const clearInterestsButton = document.querySelector("#clearInterestsButton");
 // 找到取消编辑的按钮。
 const cancelEditButton = document.querySelector("#cancelEditButton");
 // 找到兴趣区域的提示信息。
@@ -261,6 +263,30 @@ resetInterestsButton.addEventListener("click", () => {
   renderInterests();
   updateInterestEditorMode();
   showMessage(interestMessage, "兴趣列表已恢复默认。", "success");
+});
+
+// 当用户点击“清空兴趣”按钮时，删除所有兴趣。
+clearInterestsButton.addEventListener("click", () => {
+  if (interests.length === 0) {
+    showMessage(interestMessage, "当前没有可以清空的兴趣。", "info");
+    return;
+  }
+
+  const shouldClear = confirm("确定要清空全部兴趣吗？");
+
+  if (!shouldClear) {
+    showMessage(interestMessage, "已取消清空。", "info");
+    return;
+  }
+
+  // 清空数据源，并保存空数组。
+  interests = [];
+  editingInterestIndex = null;
+  interestInput.value = "";
+  saveInterests();
+  renderInterests();
+  updateInterestEditorMode();
+  showMessage(interestMessage, "全部兴趣已清空。", "success");
 });
 
 // 页面刚打开时，先把默认兴趣渲染出来。
