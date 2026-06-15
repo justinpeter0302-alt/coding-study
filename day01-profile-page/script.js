@@ -12,6 +12,8 @@ const nameMessage = document.querySelector("#nameMessage");
 const interestList = document.querySelector("#interestList");
 // 找到兴趣数量显示区域。
 const interestCount = document.querySelector("#interestCount");
+// 找到搜索兴趣的输入框。
+const searchInput = document.querySelector("#searchInput");
 // 找到新增兴趣的输入框。
 const interestInput = document.querySelector("#interestInput");
 // 找到新增兴趣的按钮。
@@ -76,12 +78,23 @@ function updateInterestEditorMode() {
   cancelEditButton.classList.remove("hidden");
 }
 
-// 根据 interests 数组重新生成页面上的兴趣列表。
+// 根据 interests 数组和搜索关键词，重新生成页面上的兴趣列表。
 function renderInterests() {
+  const searchKeyword = searchInput.value.trim().toLowerCase();
+  // filter 会返回一个新数组，不会修改原始 interests。
+  const visibleInterests = interests
+    .map((interest, index) => {
+      return { interest, index };
+    })
+    .filter((item) => {
+      return item.interest.toLowerCase().includes(searchKeyword);
+    });
+
   // 先清空列表，避免重复渲染出多份 li。
   interestList.innerHTML = "";
   // length 表示数组里有多少项。
-  interestCount.textContent = `${interests.length} 项`;
+  interestCount.textContent =
+    searchKeyword === "" ? `${interests.length} 项` : `${visibleInterests.length}/${interests.length} 项`;
 
   // 如果数组为空，就显示一个空状态提示。
   if (interests.length === 0) {
@@ -93,23 +106,33 @@ function renderInterests() {
     return;
   }
 
+  // 如果有数据但搜索结果为空，就显示“没有匹配结果”。
+  if (visibleInterests.length === 0) {
+    const emptyItem = document.createElement("li");
+
+    emptyItem.textContent = "没有匹配的兴趣。";
+    emptyItem.className = "empty-item";
+    interestList.append(emptyItem);
+    return;
+  }
+
   // forEach 会遍历数组里的每一项。
-  interests.forEach((interest, index) => {
+  visibleInterests.forEach((item) => {
     const listItem = document.createElement("li");
     const interestText = document.createElement("span");
     const editButton = document.createElement("button");
     const deleteButton = document.createElement("button");
 
-    interestText.textContent = interest;
+    interestText.textContent = item.interest;
     editButton.textContent = "编辑";
     editButton.type = "button";
     editButton.className = "edit-interest";
-    editButton.dataset.index = index;
+    editButton.dataset.index = item.index;
     deleteButton.textContent = "删除";
     deleteButton.type = "button";
     deleteButton.className = "delete-interest";
     // dataset 可以把数据藏在 HTML 元素上，这里保存它在数组里的位置。
-    deleteButton.dataset.index = index;
+    deleteButton.dataset.index = item.index;
 
     listItem.append(interestText, editButton, deleteButton);
     interestList.append(listItem);
@@ -207,6 +230,11 @@ interestInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     saveInterest();
   }
+});
+
+// 输入搜索关键词时，实时重新渲染可见列表。
+searchInput.addEventListener("input", () => {
+  renderInterests();
 });
 
 // 事件委托：把点击监听放在 ul 上，统一处理所有删除按钮。

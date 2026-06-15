@@ -187,6 +187,7 @@ article p {
 }
 
 /* 添加兴趣的输入区域，结构和修改名字区域类似。 */
+.search-editor,
 .interest-editor {
   margin-bottom: 28px;
 }
