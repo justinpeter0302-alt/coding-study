@@ -92,6 +92,19 @@ input:focus {
   font-size: 14px;
 }
 
+/* 不同类型的提示信息用不同颜色，方便用户理解当前状态。 */
+.message.success {
+  color: #137333;
+}
+
+.message.error {
+  color: #b3261e;
+}
+
+.message.info {
+  color: #5f6368;
+}
+
 /* grid 用来把两张说明卡片排成两列。 */
 .info-grid {
   display: grid;

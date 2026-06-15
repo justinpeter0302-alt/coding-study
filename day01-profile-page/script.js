@@ -52,6 +52,12 @@ function saveInterests() {
   localStorage.setItem(interestsStorageKey, JSON.stringify(interests));
 }
 
+// 统一更新提示信息，type 用来控制提示颜色。
+function showMessage(element, text, type = "info") {
+  element.textContent = text;
+  element.className = `message ${type}`;
+}
+
 // 根据 interests 数组重新生成页面上的兴趣列表。
 function renderInterests() {
   // 先清空列表，避免重复渲染出多份 li。
@@ -100,13 +106,13 @@ function saveName() {
 
   // 如果用户没有输入内容，就给出提示，并提前结束函数。
   if (newName === "") {
-    nameMessage.textContent = "请先输入一个名字。";
+    showMessage(nameMessage, "请先输入一个名字。", "error");
     return;
   }
 
   // textContent 可以修改标签里显示的文字。
   displayName.textContent = newName;
-  nameMessage.textContent = `名字已更新为：${newName}`;
+  showMessage(nameMessage, `名字已更新为：${newName}`, "success");
   nameInput.value = "";
 }
 
@@ -115,7 +121,7 @@ function addInterest() {
   const newInterest = interestInput.value.trim();
 
   if (newInterest === "") {
-    interestMessage.textContent = "请先输入一个兴趣。";
+    showMessage(interestMessage, "请先输入一个兴趣。", "error");
     return;
   }
 
@@ -126,7 +132,7 @@ function addInterest() {
 
   // 如果兴趣已经存在，就提示用户，并停止新增。
   if (isDuplicate) {
-    interestMessage.textContent = `“${newInterest}”已经在兴趣列表里了。`;
+    showMessage(interestMessage, `“${newInterest}”已经在兴趣列表里了。`, "error");
     return;
   }
 
@@ -134,7 +140,7 @@ function addInterest() {
   interests.push(newInterest);
   saveInterests();
   renderInterests();
-  interestMessage.textContent = `已添加兴趣：${newInterest}`;
+  showMessage(interestMessage, `已添加兴趣：${newInterest}`, "success");
   interestInput.value = "";
 }
 
@@ -180,7 +186,7 @@ interestList.addEventListener("click", (event) => {
   interests.splice(interestIndex, 1);
   saveInterests();
   renderInterests();
-  interestMessage.textContent = `已删除兴趣：${interestText}`;
+  showMessage(interestMessage, `已删除兴趣：${interestText}`, "success");
 });
 
 // 当用户点击“重置兴趣”按钮时，恢复默认兴趣。
@@ -189,7 +195,7 @@ resetInterestsButton.addEventListener("click", () => {
   const shouldReset = confirm("确定要重置兴趣列表吗？");
 
   if (!shouldReset) {
-    interestMessage.textContent = "已取消重置。";
+    showMessage(interestMessage, "已取消重置。", "info");
     return;
   }
 
@@ -197,7 +203,7 @@ resetInterestsButton.addEventListener("click", () => {
   interests = [...defaultInterests];
   saveInterests();
   renderInterests();
-  interestMessage.textContent = "兴趣列表已恢复默认。";
+  showMessage(interestMessage, "兴趣列表已恢复默认。", "success");
 });
 
 // 页面刚打开时，先把默认兴趣渲染出来。
