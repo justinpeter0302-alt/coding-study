@@ -119,6 +119,17 @@ addInterestButton.addEventListener("click", () => {
     return;
   }
 
+  // some 会检查数组中是否至少有一项满足条件。
+  const isDuplicate = interests.some((interest) => {
+    return interest.toLowerCase() === newInterest.toLowerCase();
+  });
+
+  // 如果兴趣已经存在，就提示用户，并停止新增。
+  if (isDuplicate) {
+    interestMessage.textContent = `“${newInterest}”已经在兴趣列表里了。`;
+    return;
+  }
+
   // push 会把新内容添加到数组末尾。
   interests.push(newInterest);
   saveInterests();
