@@ -114,6 +114,22 @@ article p {
   line-height: 1.6;
 }
 
+/* 标题和数量放在一行，方便用户快速看到列表状态。 */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.count-badge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: #4b5565;
+  background: #eef2f7;
+  font-size: 14px;
+}
+
 /* flex-wrap 允许兴趣标签在空间不足时自动换行。 */
 .interest-list {
   display: flex;
@@ -132,6 +148,12 @@ article p {
   border-radius: 8px;
   color: #2541b2;
   background: #edf1ff;
+}
+
+/* 空状态提示会在兴趣列表为空时出现。 */
+.interest-list .empty-item {
+  color: #6b7280;
+  background: #f1f3f6;
 }
 
 /* 删除按钮放在兴趣标签内部，所以尺寸比普通按钮更小。 */
@@ -176,6 +198,18 @@ button:hover {
   background: #2446bd;
 }
 
+/* 次要按钮用于不那么频繁的操作，比如重置数据。 */
+.secondary-button {
+  border: 1px solid #cfd6e4;
+  color: #2f57eb;
+  background: #ffffff;
+}
+
+.secondary-button:hover {
+  color: #ffffff;
+  background: #4b5565;
+}
+
 /* JavaScript 会给 body 添加 dark class，下面这些规则负责深色主题。 */
 body.dark {
   color: #f3f6fb;
@@ -198,6 +232,12 @@ body.dark article {
   background: #222938;
 }
 
+body.dark .count-badge,
+body.dark .interest-list .empty-item {
+  color: #c5cfdd;
+  background: #283142;
+}
+
 body.dark .interest-list li {
   color: #dce5ff;
   background: #2b3a63;
@@ -217,6 +257,16 @@ body.dark input {
   border-color: #3d4658;
   color: #f3f6fb;
   background: #151a24;
+}
+
+body.dark .secondary-button {
+  border-color: #4b5f93;
+  color: #dce5ff;
+  background: #1b202b;
+}
+
+body.dark .secondary-button:hover {
+  background: #4b5565;
 }
 
 /* 当屏幕宽度小于 640px 时，页面进入手机布局。 */

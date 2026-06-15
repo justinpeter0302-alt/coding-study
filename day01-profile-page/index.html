@@ -41,7 +41,10 @@
           </article>
         </div>
 
-        <h2>我的兴趣</h2>
+        <div class="section-title">
+          <h2>我的兴趣</h2>
+          <span id="interestCount" class="count-badge">0 项</span>
+        </div>
         <!-- ul 是兴趣列表的容器，里面的 li 会由 JavaScript 根据数组自动生成。 -->
         <ul id="interestList" class="interest-list"></ul>
 
@@ -51,6 +54,9 @@
           <div class="interest-actions">
             <input id="interestInput" type="text" placeholder="例如：阅读" />
             <button id="addInterestButton" type="button">添加兴趣</button>
+            <button id="resetInterestsButton" class="secondary-button" type="button">
+              重置兴趣
+            </button>
           </div>
           <p id="interestMessage" class="message">输入兴趣后，可以把它加入列表。</p>
         </div>

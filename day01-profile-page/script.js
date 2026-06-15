@@ -10,10 +10,14 @@ const saveNameButton = document.querySelector("#saveNameButton");
 const nameMessage = document.querySelector("#nameMessage");
 // 找到兴趣列表。
 const interestList = document.querySelector("#interestList");
+// 找到兴趣数量显示区域。
+const interestCount = document.querySelector("#interestCount");
 // 找到新增兴趣的输入框。
 const interestInput = document.querySelector("#interestInput");
 // 找到新增兴趣的按钮。
 const addInterestButton = document.querySelector("#addInterestButton");
+// 找到重置兴趣的按钮。
+const resetInterestsButton = document.querySelector("#resetInterestsButton");
 // 找到兴趣区域的提示信息。
 const interestMessage = document.querySelector("#interestMessage");
 
@@ -30,7 +34,7 @@ function loadInterests() {
 
   // 如果本地没有保存过数据，就使用默认兴趣。
   if (savedInterests === null) {
-    return defaultInterests;
+    return [...defaultInterests];
   }
 
   try {
@@ -38,7 +42,7 @@ function loadInterests() {
     return JSON.parse(savedInterests);
   } catch {
     // 如果保存的数据坏掉了，就回到默认兴趣，避免页面打不开。
-    return defaultInterests;
+    return [...defaultInterests];
   }
 }
 
@@ -52,6 +56,18 @@ function saveInterests() {
 function renderInterests() {
   // 先清空列表，避免重复渲染出多份 li。
   interestList.innerHTML = "";
+  // length 表示数组里有多少项。
+  interestCount.textContent = `${interests.length} 项`;
+
+  // 如果数组为空，就显示一个空状态提示。
+  if (interests.length === 0) {
+    const emptyItem = document.createElement("li");
+
+    emptyItem.textContent = "暂无兴趣，请添加一个。";
+    emptyItem.className = "empty-item";
+    interestList.append(emptyItem);
+    return;
+  }
 
   // forEach 会遍历数组里的每一项。
   interests.forEach((interest, index) => {
@@ -130,6 +146,23 @@ interestList.addEventListener("click", (event) => {
   saveInterests();
   renderInterests();
   interestMessage.textContent = `已删除兴趣：${interestText}`;
+});
+
+// 当用户点击“重置兴趣”按钮时，恢复默认兴趣。
+resetInterestsButton.addEventListener("click", () => {
+  // confirm 会弹出确认框，用户点击“取消”时返回 false。
+  const shouldReset = confirm("确定要重置兴趣列表吗？");
+
+  if (!shouldReset) {
+    interestMessage.textContent = "已取消重置。";
+    return;
+  }
+
+  // 复制默认数组，避免直接共用 defaultInterests 这个原始数组。
+  interests = [...defaultInterests];
+  saveInterests();
+  renderInterests();
+  interestMessage.textContent = "兴趣列表已恢复默认。";
 });
 
 // 页面刚打开时，先把默认兴趣渲染出来。
