@@ -169,7 +169,8 @@ article p {
   background: #f1f3f6;
 }
 
-/* 删除按钮放在兴趣标签内部，所以尺寸比普通按钮更小。 */
+/* 编辑和删除按钮放在兴趣标签内部，所以尺寸比普通按钮更小。 */
+.edit-interest,
 .delete-interest {
   min-height: 28px;
   padding: 0 8px;
@@ -179,6 +180,7 @@ article p {
   font-size: 14px;
 }
 
+.edit-interest:hover,
 .delete-interest:hover {
   color: #ffffff;
   background: #2541b2;
@@ -223,6 +225,11 @@ button:hover {
   background: #4b5565;
 }
 
+/* hidden 用来临时隐藏元素，比如未进入编辑状态时隐藏“取消编辑”。 */
+.hidden {
+  display: none;
+}
+
 /* JavaScript 会给 body 添加 dark class，下面这些规则负责深色主题。 */
 body.dark {
   color: #f3f6fb;
@@ -256,12 +263,14 @@ body.dark .interest-list li {
   background: #2b3a63;
 }
 
+body.dark .edit-interest,
 body.dark .delete-interest {
   border-color: #4b5f93;
   color: #dce5ff;
   background: #1b202b;
 }
 
+body.dark .edit-interest:hover,
 body.dark .delete-interest:hover {
   background: #2f57eb;
 }

@@ -18,6 +18,8 @@ const interestInput = document.querySelector("#interestInput");
 const addInterestButton = document.querySelector("#addInterestButton");
 // 找到重置兴趣的按钮。
 const resetInterestsButton = document.querySelector("#resetInterestsButton");
+// 找到取消编辑的按钮。
+const cancelEditButton = document.querySelector("#cancelEditButton");
 // 找到兴趣区域的提示信息。
 const interestMessage = document.querySelector("#interestMessage");
 
@@ -27,6 +29,8 @@ const interestsStorageKey = "day01-interests";
 const defaultInterests = ["Vibe coding", "弹吉他", "健身"];
 // 用数组保存兴趣数据。let 允许我们后面把它替换成本地读取到的数据。
 let interests = loadInterests();
+// null 表示当前没有在编辑；数字表示正在编辑的兴趣下标。
+let editingInterestIndex = null;
 
 // 从浏览器本地读取兴趣数组。
 function loadInterests() {
@@ -58,6 +62,18 @@ function showMessage(element, text, type = "info") {
   element.className = `message ${type}`;
 }
 
+// 根据是否处于编辑状态，更新按钮文字和取消按钮显示。
+function updateInterestEditorMode() {
+  if (editingInterestIndex === null) {
+    addInterestButton.textContent = "添加兴趣";
+    cancelEditButton.classList.add("hidden");
+    return;
+  }
+
+  addInterestButton.textContent = "保存修改";
+  cancelEditButton.classList.remove("hidden");
+}
+
 // 根据 interests 数组重新生成页面上的兴趣列表。
 function renderInterests() {
   // 先清空列表，避免重复渲染出多份 li。
@@ -79,16 +95,21 @@ function renderInterests() {
   interests.forEach((interest, index) => {
     const listItem = document.createElement("li");
     const interestText = document.createElement("span");
+    const editButton = document.createElement("button");
     const deleteButton = document.createElement("button");
 
     interestText.textContent = interest;
+    editButton.textContent = "编辑";
+    editButton.type = "button";
+    editButton.className = "edit-interest";
+    editButton.dataset.index = index;
     deleteButton.textContent = "删除";
     deleteButton.type = "button";
     deleteButton.className = "delete-interest";
     // dataset 可以把数据藏在 HTML 元素上，这里保存它在数组里的位置。
     deleteButton.dataset.index = index;
 
-    listItem.append(interestText, deleteButton);
+    listItem.append(interestText, editButton, deleteButton);
     interestList.append(listItem);
   });
 }
@@ -116,8 +137,8 @@ function saveName() {
   nameInput.value = "";
 }
 
-// 添加兴趣的具体逻辑，按钮点击和回车提交都会调用它。
-function addInterest() {
+// 添加或更新兴趣的具体逻辑，按钮点击和回车提交都会调用它。
+function saveInterest() {
   const newInterest = interestInput.value.trim();
 
   if (newInterest === "") {
@@ -126,13 +147,31 @@ function addInterest() {
   }
 
   // some 会检查数组中是否至少有一项满足条件。
-  const isDuplicate = interests.some((interest) => {
+  const isDuplicate = interests.some((interest, index) => {
+    // 编辑时要跳过自己，否则原名字也会被当成重复。
+    if (index === editingInterestIndex) {
+      return false;
+    }
+
     return interest.toLowerCase() === newInterest.toLowerCase();
   });
 
   // 如果兴趣已经存在，就提示用户，并停止新增。
   if (isDuplicate) {
     showMessage(interestMessage, `“${newInterest}”已经在兴趣列表里了。`, "error");
+    return;
+  }
+
+  if (editingInterestIndex !== null) {
+    const oldInterest = interests[editingInterestIndex];
+
+    interests[editingInterestIndex] = newInterest;
+    editingInterestIndex = null;
+    saveInterests();
+    renderInterests();
+    updateInterestEditorMode();
+    showMessage(interestMessage, `已将“${oldInterest}”修改为“${newInterest}”`, "success");
+    interestInput.value = "";
     return;
   }
 
@@ -158,13 +197,13 @@ nameInput.addEventListener("keydown", (event) => {
 
 // 当用户点击“添加兴趣”按钮时，先更新数组，再重新渲染列表。
 addInterestButton.addEventListener("click", () => {
-  addInterest();
+  saveInterest();
 });
 
 // 当用户在兴趣输入框按下 Enter 时，也添加兴趣。
 interestInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
-    addInterest();
+    saveInterest();
   }
 });
 
@@ -173,20 +212,36 @@ interestList.addEventListener("click", (event) => {
   // event.target 表示用户实际点击到的元素。
   const clickedElement = event.target;
 
-  // 如果点击的不是删除按钮，就不继续执行。
-  if (!clickedElement.classList.contains("delete-interest")) {
+  if (clickedElement.classList.contains("edit-interest")) {
+    editingInterestIndex = Number(clickedElement.dataset.index);
+    interestInput.value = interests[editingInterestIndex];
+    interestInput.focus();
+    updateInterestEditorMode();
+    showMessage(interestMessage, "正在编辑兴趣，修改后点击“保存修改”。", "info");
     return;
   }
 
-  // Number 会把字符串形式的下标转成数字。
-  const interestIndex = Number(clickedElement.dataset.index);
-  const interestText = interests[interestIndex];
+  if (clickedElement.classList.contains("delete-interest")) {
+    // Number 会把字符串形式的下标转成数字。
+    const interestIndex = Number(clickedElement.dataset.index);
+    const interestText = interests[interestIndex];
 
-  // splice 会从数组里删除指定位置的数据。
-  interests.splice(interestIndex, 1);
-  saveInterests();
-  renderInterests();
-  showMessage(interestMessage, `已删除兴趣：${interestText}`, "success");
+    // splice 会从数组里删除指定位置的数据。
+    interests.splice(interestIndex, 1);
+    editingInterestIndex = null;
+    saveInterests();
+    renderInterests();
+    updateInterestEditorMode();
+    showMessage(interestMessage, `已删除兴趣：${interestText}`, "success");
+  }
+});
+
+// 取消编辑时，清空输入框并恢复为新增模式。
+cancelEditButton.addEventListener("click", () => {
+  editingInterestIndex = null;
+  interestInput.value = "";
+  updateInterestEditorMode();
+  showMessage(interestMessage, "已取消编辑。", "info");
 });
 
 // 当用户点击“重置兴趣”按钮时，恢复默认兴趣。
@@ -201,10 +256,13 @@ resetInterestsButton.addEventListener("click", () => {
 
   // 复制默认数组，避免直接共用 defaultInterests 这个原始数组。
   interests = [...defaultInterests];
+  editingInterestIndex = null;
   saveInterests();
   renderInterests();
+  updateInterestEditorMode();
   showMessage(interestMessage, "兴趣列表已恢复默认。", "success");
 });
 
 // 页面刚打开时，先把默认兴趣渲染出来。
 renderInterests();
+updateInterestEditorMode();
