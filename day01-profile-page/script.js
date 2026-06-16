@@ -30,6 +30,8 @@ const interestMessage = document.querySelector("#interestMessage");
 const infoGrid = document.querySelector("#infoGrid");
 // 找到新增卡片的标题输入框。
 const cardTitleInput = document.querySelector("#cardTitleInput");
+// 找到标题字数提示。
+const cardTitleCounter = document.querySelector("#cardTitleCounter");
 // 找到新增卡片的正文输入框。
 const cardTextInput = document.querySelector("#cardTextInput");
 // 找到新增卡片的等级选择框。
@@ -45,6 +47,8 @@ const cardMessage = document.querySelector("#cardMessage");
 const interestsStorageKey = "day01-interests";
 // 信息卡片也需要一个独立 key，避免和兴趣数据混在一起。
 const infoCardsStorageKey = "day01-info-cards";
+// 学习卡片标题最长允许 12 个字符。
+const cardTitleMaxLength = 12;
 // 对象适合保存一组有关联的信息，比如一张卡片的标题和正文。
 const defaultInfoCards = [
   {
@@ -170,6 +174,14 @@ function renderInfoCards() {
   });
 }
 
+// 更新学习卡片标题的剩余字数提示。
+function updateCardTitleCounter() {
+  const remainingCount = cardTitleMaxLength - cardTitleInput.value.length;
+
+  cardTitleCounter.textContent = `还可以输入 ${remainingCount} 个字`;
+  cardTitleCounter.classList.toggle("warning", remainingCount <= 2);
+}
+
 // 根据表单内容创建一个新卡片对象，并添加到 infoCards 数组。
 function addInfoCard() {
   const title = cardTitleInput.value.trim();
@@ -178,6 +190,11 @@ function addInfoCard() {
 
   if (title === "" || text === "") {
     showMessage(cardMessage, "请填写卡片标题和正文。", "error");
+    return;
+  }
+
+  if (title.length > cardTitleMaxLength) {
+    showMessage(cardMessage, `卡片标题不能超过 ${cardTitleMaxLength} 个字。`, "error");
     return;
   }
 
@@ -194,6 +211,7 @@ function addInfoCard() {
   showMessage(cardMessage, `已添加卡片：${title}`, "success");
   cardTitleInput.value = "";
   cardTextInput.value = "";
+  updateCardTitleCounter();
 }
 
 // 恢复默认学习卡片。
@@ -361,6 +379,11 @@ addCardButton.addEventListener("click", () => {
   addInfoCard();
 });
 
+// 输入标题时，实时更新剩余字数。
+cardTitleInput.addEventListener("input", () => {
+  updateCardTitleCounter();
+});
+
 // 点击按钮时，恢复默认学习卡片。
 resetCardsButton.addEventListener("click", () => {
   resetInfoCards();
@@ -497,3 +520,4 @@ clearInterestsButton.addEventListener("click", () => {
 renderInfoCards();
 renderInterests();
 updateInterestEditorMode();
+updateCardTitleCounter();

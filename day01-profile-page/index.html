@@ -36,7 +36,7 @@
         <div class="card-editor">
           <label for="cardTitleInput">添加学习卡片</label>
           <div class="card-actions">
-            <input id="cardTitleInput" type="text" placeholder="卡片标题" />
+            <input id="cardTitleInput" type="text" maxlength="12" placeholder="卡片标题" />
             <input id="cardTextInput" type="text" placeholder="卡片正文" />
             <select id="cardLevelInput">
               <option value="基础">基础</option>
@@ -47,6 +47,7 @@
               重置卡片
             </button>
           </div>
+          <p id="cardTitleCounter" class="counter">还可以输入 12 个字</p>
           <p id="cardMessage" class="message">填写标题和正文后，可以新增一张卡片。</p>
         </div>
 

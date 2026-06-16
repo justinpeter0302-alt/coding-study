@@ -119,6 +119,16 @@ select:focus {
   color: #5f6368;
 }
 
+.counter {
+  margin: 8px 0 0;
+  color: #5f6368;
+  font-size: 14px;
+}
+
+.counter.warning {
+  color: #b3261e;
+}
+
 /* grid 用来把两张说明卡片排成两列。 */
 .info-grid {
   display: grid;
