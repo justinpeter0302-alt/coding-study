@@ -36,6 +36,8 @@ const cardTextInput = document.querySelector("#cardTextInput");
 const cardLevelInput = document.querySelector("#cardLevelInput");
 // 找到新增卡片按钮。
 const addCardButton = document.querySelector("#addCardButton");
+// 找到重置卡片按钮。
+const resetCardsButton = document.querySelector("#resetCardsButton");
 // 找到卡片区域提示信息。
 const cardMessage = document.querySelector("#cardMessage");
 
@@ -194,6 +196,24 @@ function addInfoCard() {
   cardTextInput.value = "";
 }
 
+// 恢复默认学习卡片。
+function resetInfoCards() {
+  const shouldReset = confirm("确定要重置学习卡片吗？");
+
+  if (!shouldReset) {
+    showMessage(cardMessage, "已取消重置卡片。", "info");
+    return;
+  }
+
+  // 复制默认对象数组，避免直接共用 defaultInfoCards。
+  infoCards = defaultInfoCards.map((card) => {
+    return { ...card };
+  });
+  saveInfoCards();
+  renderInfoCards();
+  showMessage(cardMessage, "学习卡片已恢复默认。", "success");
+}
+
 // 根据 interests 数组和搜索关键词，重新生成页面上的兴趣列表。
 function renderInterests() {
   const searchKeyword = searchInput.value.trim().toLowerCase();
@@ -339,6 +359,11 @@ nameInput.addEventListener("keydown", (event) => {
 // 点击按钮时，新增一张信息卡片。
 addCardButton.addEventListener("click", () => {
   addInfoCard();
+});
+
+// 点击按钮时，恢复默认学习卡片。
+resetCardsButton.addEventListener("click", () => {
+  resetInfoCards();
 });
 
 // 在卡片正文输入框里按 Enter，也新增卡片。
