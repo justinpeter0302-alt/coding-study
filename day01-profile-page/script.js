@@ -36,10 +36,12 @@ const infoCards = [
   {
     title: "今天学习",
     text: "HTML 负责网页结构，CSS 负责样式，JavaScript 负责交互。",
+    level: "基础",
   },
   {
     title: "近期目标",
     text: "先做出简单页面，再逐步学习 React、后端、数据库和部署。",
+    level: "计划",
   },
 ];
 // 默认兴趣用于第一次打开页面，或者本地没有保存数据时。
@@ -97,14 +99,20 @@ function renderInfoCards() {
 
   infoCards.forEach((card) => {
     const article = document.createElement("article");
+    const cardHeader = document.createElement("div");
     const title = document.createElement("h2");
+    const level = document.createElement("span");
     const text = document.createElement("p");
 
     // 通过对象的属性名读取数据。
     title.textContent = card.title;
+    level.textContent = card.level;
+    level.className = `level-badge level-${card.level}`;
     text.textContent = card.text;
 
-    article.append(title, text);
+    cardHeader.className = "card-header";
+    cardHeader.append(title, level);
+    article.append(cardHeader, text);
     infoGrid.append(article);
   });
 }

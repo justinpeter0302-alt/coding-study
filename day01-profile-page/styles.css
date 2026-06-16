@@ -127,6 +127,37 @@ article p {
   line-height: 1.6;
 }
 
+/* 卡片头部把标题和标签排在一行。 */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+/* level-badge 是由对象里的 level 字段生成的小标签。 */
+.level-badge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.level-基础 {
+  color: #174ea6;
+  background: #e8f0fe;
+}
+
+.level-计划 {
+  color: #137333;
+  background: #e6f4ea;
+}
+
 /* 标题和数量放在一行，方便用户快速看到列表状态。 */
 .section-title {
   display: flex;
@@ -263,6 +294,16 @@ body.dark .message {
 body.dark article {
   border-color: #30394a;
   background: #222938;
+}
+
+body.dark .level-基础 {
+  color: #d2e3fc;
+  background: #26395f;
+}
+
+body.dark .level-计划 {
+  color: #ceead6;
+  background: #1f3b2c;
 }
 
 body.dark .count-badge,
