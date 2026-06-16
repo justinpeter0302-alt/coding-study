@@ -178,20 +178,22 @@ function renderInfoCards() {
   });
 }
 
+// 通用字数提示函数，可以同时服务标题和正文。
+function updateCounter(inputElement, counterElement, maxLength, warningLimit, prefix = "还可以输入") {
+  const remainingCount = maxLength - inputElement.value.length;
+
+  counterElement.textContent = `${prefix} ${remainingCount} 个字`;
+  counterElement.classList.toggle("warning", remainingCount <= warningLimit);
+}
+
 // 更新学习卡片标题的剩余字数提示。
 function updateCardTitleCounter() {
-  const remainingCount = cardTitleMaxLength - cardTitleInput.value.length;
-
-  cardTitleCounter.textContent = `还可以输入 ${remainingCount} 个字`;
-  cardTitleCounter.classList.toggle("warning", remainingCount <= 2);
+  updateCounter(cardTitleInput, cardTitleCounter, cardTitleMaxLength, 2);
 }
 
 // 更新学习卡片正文的剩余字数提示。
 function updateCardTextCounter() {
-  const remainingCount = cardTextMaxLength - cardTextInput.value.length;
-
-  cardTextCounter.textContent = `正文还可以输入 ${remainingCount} 个字`;
-  cardTextCounter.classList.toggle("warning", remainingCount <= 5);
+  updateCounter(cardTextInput, cardTextCounter, cardTextMaxLength, 5, "正文还可以输入");
 }
 
 // 根据表单内容创建一个新卡片对象，并添加到 infoCards 数组。
