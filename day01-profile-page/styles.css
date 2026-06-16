@@ -144,6 +144,17 @@ select:focus {
   font-size: 14px;
 }
 
+.card-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.card-filter label {
+  margin: 0;
+}
+
 /* grid 用来把两张说明卡片排成两列。 */
 .info-grid {
   display: grid;

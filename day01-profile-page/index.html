@@ -31,6 +31,14 @@
 
         <!-- 统计信息会由 JavaScript 根据卡片完成状态自动更新。 -->
         <div id="cardStats" class="card-stats"></div>
+        <div class="card-filter">
+          <label for="cardStatusFilter">筛选学习卡片</label>
+          <select id="cardStatusFilter">
+            <option value="all">全部</option>
+            <option value="completed">已完成</option>
+            <option value="pending">未完成</option>
+          </select>
+        </div>
 
         <!-- 这里的卡片会由 JavaScript 根据对象数组自动生成。 -->
         <div id="infoGrid" class="info-grid"></div>

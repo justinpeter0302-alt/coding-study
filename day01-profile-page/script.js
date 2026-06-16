@@ -30,6 +30,8 @@ const interestMessage = document.querySelector("#interestMessage");
 const infoGrid = document.querySelector("#infoGrid");
 // 找到学习卡片统计区域。
 const cardStats = document.querySelector("#cardStats");
+// 找到学习卡片状态筛选框。
+const cardStatusFilter = document.querySelector("#cardStatusFilter");
 // 找到新增卡片的标题输入框。
 const cardTitleInput = document.querySelector("#cardTitleInput");
 // 找到标题字数提示。
@@ -158,6 +160,23 @@ function renderCardStats() {
 
 // 根据 infoCards 对象数组，生成页面上的信息卡片。
 function renderInfoCards() {
+  const statusFilter = cardStatusFilter.value;
+  const visibleInfoCards = infoCards
+    .map((card, index) => {
+      return { card, index };
+    })
+    .filter((item) => {
+      if (statusFilter === "completed") {
+        return item.card.completed;
+      }
+
+      if (statusFilter === "pending") {
+        return !item.card.completed;
+      }
+
+      return true;
+    });
+
   infoGrid.innerHTML = "";
   renderCardStats();
 
@@ -170,7 +189,18 @@ function renderInfoCards() {
     return;
   }
 
-  infoCards.forEach((card, index) => {
+  if (visibleInfoCards.length === 0) {
+    const emptyCard = document.createElement("article");
+
+    emptyCard.textContent = "当前筛选条件下没有学习卡片。";
+    emptyCard.className = "empty-card";
+    infoGrid.append(emptyCard);
+    return;
+  }
+
+  visibleInfoCards.forEach((item) => {
+    const card = item.card;
+    const index = item.index;
     const article = document.createElement("article");
     const cardHeader = document.createElement("div");
     const cardTitleGroup = document.createElement("div");
@@ -436,6 +466,11 @@ cardTitleInput.addEventListener("input", () => {
 // 输入正文时，实时更新剩余字数。
 cardTextInput.addEventListener("input", () => {
   updateCardTextCounter();
+});
+
+// 切换完成状态筛选时，重新渲染可见卡片。
+cardStatusFilter.addEventListener("change", () => {
+  renderInfoCards();
 });
 
 // 点击按钮时，恢复默认学习卡片。
