@@ -160,6 +160,12 @@ article p {
   margin-bottom: 12px;
 }
 
+.card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .card-header h2 {
   margin: 0;
 }
@@ -180,6 +186,20 @@ article p {
 .level-计划 {
   color: #137333;
   background: #e6f4ea;
+}
+
+.delete-card {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #f1b8b3;
+  color: #b3261e;
+  background: #fff7f6;
+  font-size: 14px;
+}
+
+.delete-card:hover {
+  color: #ffffff;
+  background: #b3261e;
 }
 
 /* 标题和数量放在一行，方便用户快速看到列表状态。 */
@@ -328,6 +348,17 @@ body.dark .level-基础 {
 body.dark .level-计划 {
   color: #ceead6;
   background: #1f3b2c;
+}
+
+body.dark .delete-card {
+  border-color: #8c3f39;
+  color: #ffb4ab;
+  background: #2a1715;
+}
+
+body.dark .delete-card:hover {
+  color: #ffffff;
+  background: #b3261e;
 }
 
 body.dark .count-badge,

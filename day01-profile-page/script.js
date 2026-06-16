@@ -131,21 +131,29 @@ function updateInterestEditorMode() {
 function renderInfoCards() {
   infoGrid.innerHTML = "";
 
-  infoCards.forEach((card) => {
+  infoCards.forEach((card, index) => {
     const article = document.createElement("article");
     const cardHeader = document.createElement("div");
+    const cardTitleGroup = document.createElement("div");
     const title = document.createElement("h2");
     const level = document.createElement("span");
+    const deleteButton = document.createElement("button");
     const text = document.createElement("p");
 
     // 通过对象的属性名读取数据。
     title.textContent = card.title;
     level.textContent = card.level;
     level.className = `level-badge level-${card.level}`;
+    deleteButton.textContent = "删除";
+    deleteButton.type = "button";
+    deleteButton.className = "delete-card";
+    deleteButton.dataset.index = index;
     text.textContent = card.text;
 
+    cardTitleGroup.className = "card-title-group";
+    cardTitleGroup.append(title, level);
     cardHeader.className = "card-header";
-    cardHeader.append(title, level);
+    cardHeader.append(cardTitleGroup, deleteButton);
     article.append(cardHeader, text);
     infoGrid.append(article);
   });
@@ -329,6 +337,29 @@ cardTextInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     addInfoCard();
   }
+});
+
+// 事件委托：统一处理信息卡片里的按钮点击。
+infoGrid.addEventListener("click", (event) => {
+  const clickedElement = event.target;
+
+  if (!clickedElement.classList.contains("delete-card")) {
+    return;
+  }
+
+  const cardIndex = Number(clickedElement.dataset.index);
+  const cardTitle = infoCards[cardIndex].title;
+  const shouldDelete = confirm(`确定要删除“${cardTitle}”吗？`);
+
+  if (!shouldDelete) {
+    showMessage(cardMessage, "已取消删除卡片。", "info");
+    return;
+  }
+
+  infoCards.splice(cardIndex, 1);
+  saveInfoCards();
+  renderInfoCards();
+  showMessage(cardMessage, `已删除卡片：${cardTitle}`, "success");
 });
 
 // 当用户点击“添加兴趣”按钮时，先更新数组，再重新渲染列表。
