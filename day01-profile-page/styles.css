@@ -151,6 +151,10 @@ select:focus {
   margin-bottom: 16px;
 }
 
+.card-filter input {
+  max-width: 220px;
+}
+
 .card-filter label {
   margin: 0;
 }

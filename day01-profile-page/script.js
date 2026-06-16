@@ -30,6 +30,8 @@ const interestMessage = document.querySelector("#interestMessage");
 const infoGrid = document.querySelector("#infoGrid");
 // 找到学习卡片统计区域。
 const cardStats = document.querySelector("#cardStats");
+// 找到学习卡片标题搜索框。
+const cardSearchInput = document.querySelector("#cardSearchInput");
 // 找到学习卡片状态筛选框。
 const cardStatusFilter = document.querySelector("#cardStatusFilter");
 // 找到学习卡片等级筛选框。
@@ -162,6 +164,7 @@ function renderCardStats() {
 
 // 根据 infoCards 对象数组，生成页面上的信息卡片。
 function renderInfoCards() {
+  const searchKeyword = cardSearchInput.value.trim().toLowerCase();
   const statusFilter = cardStatusFilter.value;
   const levelFilter = cardLevelFilter.value;
   const visibleInfoCards = infoCards
@@ -174,8 +177,9 @@ function renderInfoCards() {
         (statusFilter === "completed" && item.card.completed) ||
         (statusFilter === "pending" && !item.card.completed);
       const isLevelMatched = levelFilter === "all" || item.card.level === levelFilter;
+      const isSearchMatched = item.card.title.toLowerCase().includes(searchKeyword);
 
-      return isStatusMatched && isLevelMatched;
+      return isSearchMatched && isStatusMatched && isLevelMatched;
     });
 
   infoGrid.innerHTML = "";
@@ -471,6 +475,11 @@ cardTextInput.addEventListener("input", () => {
 
 // 切换完成状态筛选时，重新渲染可见卡片。
 cardStatusFilter.addEventListener("change", () => {
+  renderInfoCards();
+});
+
+// 输入卡片标题关键词时，实时重新渲染可见卡片。
+cardSearchInput.addEventListener("input", () => {
   renderInfoCards();
 });
 
