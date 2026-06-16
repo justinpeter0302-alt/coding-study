@@ -28,6 +28,8 @@ const cancelEditButton = document.querySelector("#cancelEditButton");
 const interestMessage = document.querySelector("#interestMessage");
 // 找到信息卡片容器。
 const infoGrid = document.querySelector("#infoGrid");
+// 找到学习卡片统计区域。
+const cardStats = document.querySelector("#cardStats");
 // 找到新增卡片的标题输入框。
 const cardTitleInput = document.querySelector("#cardTitleInput");
 // 找到标题字数提示。
@@ -139,9 +141,25 @@ function updateInterestEditorMode() {
   cancelEditButton.classList.remove("hidden");
 }
 
+// 根据卡片完成状态更新统计信息。
+function renderCardStats() {
+  const totalCount = infoCards.length;
+  const completedCount = infoCards.filter((card) => {
+    return card.completed;
+  }).length;
+  const pendingCount = totalCount - completedCount;
+
+  cardStats.innerHTML = `
+    <span class="stat-pill">全部：${totalCount}</span>
+    <span class="stat-pill">已完成：${completedCount}</span>
+    <span class="stat-pill">未完成：${pendingCount}</span>
+  `;
+}
+
 // 根据 infoCards 对象数组，生成页面上的信息卡片。
 function renderInfoCards() {
   infoGrid.innerHTML = "";
+  renderCardStats();
 
   if (infoCards.length === 0) {
     const emptyCard = document.createElement("article");

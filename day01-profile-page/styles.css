@@ -129,6 +129,21 @@ select:focus {
   color: #b3261e;
 }
 
+.card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-pill {
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: #4b5565;
+  background: #eef2f7;
+  font-size: 14px;
+}
+
 /* grid 用来把两张说明卡片排成两列。 */
 .info-grid {
   display: grid;
@@ -386,6 +401,11 @@ body.dark .message {
 body.dark article {
   border-color: #30394a;
   background: #222938;
+}
+
+body.dark .stat-pill {
+  color: #c5cfdd;
+  background: #283142;
 }
 
 body.dark .empty-card {
