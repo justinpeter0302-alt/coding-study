@@ -41,8 +41,10 @@ const cardMessage = document.querySelector("#cardMessage");
 
 // localStorage 只能保存字符串，所以我们用一个固定 key 找到兴趣数据。
 const interestsStorageKey = "day01-interests";
+// 信息卡片也需要一个独立 key，避免和兴趣数据混在一起。
+const infoCardsStorageKey = "day01-info-cards";
 // 对象适合保存一组有关联的信息，比如一张卡片的标题和正文。
-const infoCards = [
+const defaultInfoCards = [
   {
     title: "今天学习",
     text: "HTML 负责网页结构，CSS 负责样式，JavaScript 负责交互。",
@@ -56,6 +58,8 @@ const infoCards = [
 ];
 // 默认兴趣用于第一次打开页面，或者本地没有保存数据时。
 const defaultInterests = ["Vibe coding", "弹吉他", "健身"];
+// 用对象数组保存卡片数据，页面显示什么由它决定。
+let infoCards = loadInfoCards();
 // 用数组保存兴趣数据。let 允许我们后面把它替换成本地读取到的数据。
 let interests = loadInterests();
 // null 表示当前没有在编辑；数字表示正在编辑的兴趣下标。
@@ -79,10 +83,30 @@ function loadInterests() {
   }
 }
 
+// 从浏览器本地读取信息卡片对象数组。
+function loadInfoCards() {
+  const savedInfoCards = localStorage.getItem(infoCardsStorageKey);
+
+  if (savedInfoCards === null) {
+    return [...defaultInfoCards];
+  }
+
+  try {
+    return JSON.parse(savedInfoCards);
+  } catch {
+    return [...defaultInfoCards];
+  }
+}
+
 // 把当前兴趣数组保存到浏览器本地。
 function saveInterests() {
   // JSON.stringify 可以把数组转换成 localStorage 能保存的字符串。
   localStorage.setItem(interestsStorageKey, JSON.stringify(interests));
+}
+
+// 把当前信息卡片对象数组保存到浏览器本地。
+function saveInfoCards() {
+  localStorage.setItem(infoCardsStorageKey, JSON.stringify(infoCards));
 }
 
 // 统一更新提示信息，type 用来控制提示颜色。
@@ -146,6 +170,7 @@ function addInfoCard() {
   };
 
   infoCards.push(newCard);
+  saveInfoCards();
   renderInfoCards();
   showMessage(cardMessage, `已添加卡片：${title}`, "success");
   cardTitleInput.value = "";
