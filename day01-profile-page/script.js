@@ -59,11 +59,13 @@ const defaultInfoCards = [
     title: "今天学习",
     text: "HTML 负责网页结构，CSS 负责样式，JavaScript 负责交互。",
     level: "基础",
+    completed: true,
   },
   {
     title: "近期目标",
     text: "先做出简单页面，再逐步学习 React、后端、数据库和部署。",
     level: "计划",
+    completed: false,
   },
 ];
 // 默认兴趣用于第一次打开页面，或者本地没有保存数据时。
@@ -156,6 +158,8 @@ function renderInfoCards() {
     const cardTitleGroup = document.createElement("div");
     const title = document.createElement("h2");
     const level = document.createElement("span");
+    const status = document.createElement("span");
+    const toggleButton = document.createElement("button");
     const deleteButton = document.createElement("button");
     const text = document.createElement("p");
 
@@ -163,6 +167,12 @@ function renderInfoCards() {
     title.textContent = card.title;
     level.textContent = card.level;
     level.className = `level-badge level-${card.level}`;
+    status.textContent = card.completed ? "已完成" : "未完成";
+    status.className = card.completed ? "status-badge completed" : "status-badge pending";
+    toggleButton.textContent = card.completed ? "取消完成" : "标记完成";
+    toggleButton.type = "button";
+    toggleButton.className = "toggle-card";
+    toggleButton.dataset.index = index;
     deleteButton.textContent = "删除";
     deleteButton.type = "button";
     deleteButton.className = "delete-card";
@@ -170,9 +180,9 @@ function renderInfoCards() {
     text.textContent = card.text;
 
     cardTitleGroup.className = "card-title-group";
-    cardTitleGroup.append(title, level);
+    cardTitleGroup.append(title, level, status);
     cardHeader.className = "card-header";
-    cardHeader.append(cardTitleGroup, deleteButton);
+    cardHeader.append(cardTitleGroup, toggleButton, deleteButton);
     article.append(cardHeader, text);
     infoGrid.append(article);
   });
@@ -222,6 +232,7 @@ function addInfoCard() {
     title,
     text,
     level,
+    completed: false,
   };
 
   infoCards.push(newCard);
@@ -425,11 +436,20 @@ cardTextInput.addEventListener("keydown", (event) => {
 infoGrid.addEventListener("click", (event) => {
   const clickedElement = event.target;
 
+  const cardIndex = Number(clickedElement.dataset.index);
+
+  if (clickedElement.classList.contains("toggle-card")) {
+    infoCards[cardIndex].completed = !infoCards[cardIndex].completed;
+    saveInfoCards();
+    renderInfoCards();
+    showMessage(cardMessage, `已更新“${infoCards[cardIndex].title}”的完成状态。`, "success");
+    return;
+  }
+
   if (!clickedElement.classList.contains("delete-card")) {
     return;
   }
 
-  const cardIndex = Number(clickedElement.dataset.index);
   const cardTitle = infoCards[cardIndex].title;
   const shouldDelete = confirm(`确定要删除“${cardTitle}”吗？`);
 

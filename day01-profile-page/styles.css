@@ -204,13 +204,45 @@ article p {
   background: #e6f4ea;
 }
 
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.status-badge.completed {
+  color: #0b57d0;
+  background: #e8f0fe;
+}
+
+.status-badge.pending {
+  color: #8a4b00;
+  background: #fff4d6;
+}
+
+.toggle-card,
 .delete-card {
   min-height: 32px;
   padding: 0 10px;
+  font-size: 14px;
+}
+
+.toggle-card {
+  border: 1px solid #c7d2ff;
+  color: #2541b2;
+  background: #ffffff;
+}
+
+.toggle-card:hover {
+  color: #ffffff;
+  background: #2541b2;
+}
+
+.delete-card {
   border: 1px solid #f1b8b3;
   color: #b3261e;
   background: #fff7f6;
-  font-size: 14px;
 }
 
 .delete-card:hover {
@@ -369,6 +401,26 @@ body.dark .level-基础 {
 body.dark .level-计划 {
   color: #ceead6;
   background: #1f3b2c;
+}
+
+body.dark .status-badge.completed {
+  color: #d2e3fc;
+  background: #26395f;
+}
+
+body.dark .status-badge.pending {
+  color: #ffddb0;
+  background: #4a3412;
+}
+
+body.dark .toggle-card {
+  border-color: #4b5f93;
+  color: #dce5ff;
+  background: #1b202b;
+}
+
+body.dark .toggle-card:hover {
+  background: #2f57eb;
 }
 
 body.dark .delete-card {
