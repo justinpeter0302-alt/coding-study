@@ -28,6 +28,16 @@ const cancelEditButton = document.querySelector("#cancelEditButton");
 const interestMessage = document.querySelector("#interestMessage");
 // 找到信息卡片容器。
 const infoGrid = document.querySelector("#infoGrid");
+// 找到新增卡片的标题输入框。
+const cardTitleInput = document.querySelector("#cardTitleInput");
+// 找到新增卡片的正文输入框。
+const cardTextInput = document.querySelector("#cardTextInput");
+// 找到新增卡片的等级选择框。
+const cardLevelInput = document.querySelector("#cardLevelInput");
+// 找到新增卡片按钮。
+const addCardButton = document.querySelector("#addCardButton");
+// 找到卡片区域提示信息。
+const cardMessage = document.querySelector("#cardMessage");
 
 // localStorage 只能保存字符串，所以我们用一个固定 key 找到兴趣数据。
 const interestsStorageKey = "day01-interests";
@@ -115,6 +125,31 @@ function renderInfoCards() {
     article.append(cardHeader, text);
     infoGrid.append(article);
   });
+}
+
+// 根据表单内容创建一个新卡片对象，并添加到 infoCards 数组。
+function addInfoCard() {
+  const title = cardTitleInput.value.trim();
+  const text = cardTextInput.value.trim();
+  const level = cardLevelInput.value;
+
+  if (title === "" || text === "") {
+    showMessage(cardMessage, "请填写卡片标题和正文。", "error");
+    return;
+  }
+
+  // 新卡片是一个对象，对象里保存这张卡片需要的多个字段。
+  const newCard = {
+    title,
+    text,
+    level,
+  };
+
+  infoCards.push(newCard);
+  renderInfoCards();
+  showMessage(cardMessage, `已添加卡片：${title}`, "success");
+  cardTitleInput.value = "";
+  cardTextInput.value = "";
 }
 
 // 根据 interests 数组和搜索关键词，重新生成页面上的兴趣列表。
@@ -256,6 +291,18 @@ saveNameButton.addEventListener("click", () => {
 nameInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     saveName();
+  }
+});
+
+// 点击按钮时，新增一张信息卡片。
+addCardButton.addEventListener("click", () => {
+  addInfoCard();
+});
+
+// 在卡片正文输入框里按 Enter，也新增卡片。
+cardTextInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    addInfoCard();
   }
 });
 

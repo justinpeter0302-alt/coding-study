@@ -32,6 +32,21 @@
         <!-- 这里的卡片会由 JavaScript 根据对象数组自动生成。 -->
         <div id="infoGrid" class="info-grid"></div>
 
+        <!-- 这个区域用来练习创建对象，并把对象添加到数组中。 -->
+        <div class="card-editor">
+          <label for="cardTitleInput">添加学习卡片</label>
+          <div class="card-actions">
+            <input id="cardTitleInput" type="text" placeholder="卡片标题" />
+            <input id="cardTextInput" type="text" placeholder="卡片正文" />
+            <select id="cardLevelInput">
+              <option value="基础">基础</option>
+              <option value="计划">计划</option>
+            </select>
+            <button id="addCardButton" type="button">添加卡片</button>
+          </div>
+          <p id="cardMessage" class="message">填写标题和正文后，可以新增一张卡片。</p>
+        </div>
+
         <div class="section-title">
           <h2>我的兴趣</h2>
           <span id="interestCount" class="count-badge">0 项</span>

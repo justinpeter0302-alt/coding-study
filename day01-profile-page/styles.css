@@ -81,7 +81,21 @@ input {
   font-size: 16px;
 }
 
+select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #cfd6e4;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 16px;
+}
+
 input:focus {
+  border-color: #2f57eb;
+  outline: 3px solid #dfe6ff;
+}
+
+select:focus {
   border-color: #2f57eb;
   outline: 3px solid #dfe6ff;
 }
@@ -119,6 +133,16 @@ article {
   border: 1px solid #e6e8ef;
   border-radius: 8px;
   background: #fafbff;
+}
+
+.card-editor {
+  margin-bottom: 28px;
+}
+
+.card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr auto auto;
+  gap: 10px;
 }
 
 article p {
@@ -335,6 +359,12 @@ body.dark input {
   background: #151a24;
 }
 
+body.dark select {
+  border-color: #3d4658;
+  color: #f3f6fb;
+  background: #151a24;
+}
+
 body.dark .secondary-button {
   border-color: #4b5f93;
   color: #dce5ff;
@@ -367,6 +397,10 @@ body.dark .danger-button:hover {
   }
 
   .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-actions {
     grid-template-columns: 1fr;
   }
 
