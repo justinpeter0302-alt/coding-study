@@ -151,6 +151,12 @@ article p {
   line-height: 1.6;
 }
 
+/* 当没有学习卡片时，显示空状态提示。 */
+.empty-card {
+  color: #6b7280;
+  background: #f1f3f6;
+}
+
 /* 卡片头部把标题和标签排在一行。 */
 .card-header {
   display: flex;
@@ -338,6 +344,11 @@ body.dark .message {
 body.dark article {
   border-color: #30394a;
   background: #222938;
+}
+
+body.dark .empty-card {
+  color: #c5cfdd;
+  background: #283142;
 }
 
 body.dark .level-基础 {

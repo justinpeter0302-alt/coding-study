@@ -131,6 +131,15 @@ function updateInterestEditorMode() {
 function renderInfoCards() {
   infoGrid.innerHTML = "";
 
+  if (infoCards.length === 0) {
+    const emptyCard = document.createElement("article");
+
+    emptyCard.textContent = "暂无学习卡片，请添加一张。";
+    emptyCard.className = "empty-card";
+    infoGrid.append(emptyCard);
+    return;
+  }
+
   infoCards.forEach((card, index) => {
     const article = document.createElement("article");
     const cardHeader = document.createElement("div");
