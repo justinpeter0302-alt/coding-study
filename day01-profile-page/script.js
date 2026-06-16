@@ -38,6 +38,8 @@ const cardStatusFilter = document.querySelector("#cardStatusFilter");
 const cardLevelFilter = document.querySelector("#cardLevelFilter");
 // 找到清空学习卡片筛选按钮。
 const clearCardFiltersButton = document.querySelector("#clearCardFiltersButton");
+// 找到学习卡片筛选说明。
+const cardFilterSummary = document.querySelector("#cardFilterSummary");
 // 找到新增卡片的标题输入框。
 const cardTitleInput = document.querySelector("#cardTitleInput");
 // 找到标题字数提示。
@@ -164,6 +166,30 @@ function renderCardStats() {
   `;
 }
 
+// 根据当前筛选条件，生成一段说明文字。
+function renderCardFilterSummary(searchKeyword, statusFilter, levelFilter) {
+  const summaryParts = [];
+
+  if (searchKeyword !== "") {
+    summaryParts.push(`标题包含“${searchKeyword}”`);
+  }
+
+  if (statusFilter === "completed") {
+    summaryParts.push("已完成");
+  }
+
+  if (statusFilter === "pending") {
+    summaryParts.push("未完成");
+  }
+
+  if (levelFilter !== "all") {
+    summaryParts.push(`${levelFilter}等级`);
+  }
+
+  cardFilterSummary.textContent =
+    summaryParts.length === 0 ? "当前显示全部学习卡片。" : `当前筛选：${summaryParts.join(" / ")}`;
+}
+
 // 根据 infoCards 对象数组，生成页面上的信息卡片。
 function renderInfoCards() {
   const searchKeyword = cardSearchInput.value.trim().toLowerCase();
@@ -186,6 +212,7 @@ function renderInfoCards() {
 
   infoGrid.innerHTML = "";
   renderCardStats();
+  renderCardFilterSummary(searchKeyword, statusFilter, levelFilter);
 
   if (infoCards.length === 0) {
     const emptyCard = document.createElement("article");
