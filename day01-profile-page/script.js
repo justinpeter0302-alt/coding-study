@@ -36,6 +36,8 @@ const cardSearchInput = document.querySelector("#cardSearchInput");
 const cardStatusFilter = document.querySelector("#cardStatusFilter");
 // 找到学习卡片等级筛选框。
 const cardLevelFilter = document.querySelector("#cardLevelFilter");
+// 找到清空学习卡片筛选按钮。
+const clearCardFiltersButton = document.querySelector("#clearCardFiltersButton");
 // 找到新增卡片的标题输入框。
 const cardTitleInput = document.querySelector("#cardTitleInput");
 // 找到标题字数提示。
@@ -239,6 +241,15 @@ function renderInfoCards() {
     article.append(cardHeader, text);
     infoGrid.append(article);
   });
+}
+
+// 清空卡片筛选条件，恢复显示全部卡片。
+function clearCardFilters() {
+  cardSearchInput.value = "";
+  cardStatusFilter.value = "all";
+  cardLevelFilter.value = "all";
+  renderInfoCards();
+  showMessage(cardMessage, "已清空筛选条件。", "info");
 }
 
 // 通用字数提示函数，可以同时服务标题和正文。
@@ -486,6 +497,11 @@ cardSearchInput.addEventListener("input", () => {
 // 切换等级筛选时，重新渲染可见卡片。
 cardLevelFilter.addEventListener("change", () => {
   renderInfoCards();
+});
+
+// 点击按钮时，清空所有卡片筛选条件。
+clearCardFiltersButton.addEventListener("click", () => {
+  clearCardFilters();
 });
 
 // 点击按钮时，恢复默认学习卡片。
