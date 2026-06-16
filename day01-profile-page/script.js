@@ -34,6 +34,8 @@ const cardTitleInput = document.querySelector("#cardTitleInput");
 const cardTitleCounter = document.querySelector("#cardTitleCounter");
 // 找到新增卡片的正文输入框。
 const cardTextInput = document.querySelector("#cardTextInput");
+// 找到正文剩余字数提示。
+const cardTextCounter = document.querySelector("#cardTextCounter");
 // 找到新增卡片的等级选择框。
 const cardLevelInput = document.querySelector("#cardLevelInput");
 // 找到新增卡片按钮。
@@ -49,6 +51,8 @@ const interestsStorageKey = "day01-interests";
 const infoCardsStorageKey = "day01-info-cards";
 // 学习卡片标题最长允许 12 个字符。
 const cardTitleMaxLength = 12;
+// 学习卡片正文最长允许 60 个字符。
+const cardTextMaxLength = 60;
 // 对象适合保存一组有关联的信息，比如一张卡片的标题和正文。
 const defaultInfoCards = [
   {
@@ -182,6 +186,14 @@ function updateCardTitleCounter() {
   cardTitleCounter.classList.toggle("warning", remainingCount <= 2);
 }
 
+// 更新学习卡片正文的剩余字数提示。
+function updateCardTextCounter() {
+  const remainingCount = cardTextMaxLength - cardTextInput.value.length;
+
+  cardTextCounter.textContent = `正文还可以输入 ${remainingCount} 个字`;
+  cardTextCounter.classList.toggle("warning", remainingCount <= 5);
+}
+
 // 根据表单内容创建一个新卡片对象，并添加到 infoCards 数组。
 function addInfoCard() {
   const title = cardTitleInput.value.trim();
@@ -190,6 +202,11 @@ function addInfoCard() {
 
   if (title === "" || text === "") {
     showMessage(cardMessage, "请填写卡片标题和正文。", "error");
+    return;
+  }
+
+  if (text.length > cardTextMaxLength) {
+    showMessage(cardMessage, `卡片正文不能超过 ${cardTextMaxLength} 个字。`, "error");
     return;
   }
 
@@ -212,6 +229,7 @@ function addInfoCard() {
   cardTitleInput.value = "";
   cardTextInput.value = "";
   updateCardTitleCounter();
+  updateCardTextCounter();
 }
 
 // 恢复默认学习卡片。
@@ -384,6 +402,11 @@ cardTitleInput.addEventListener("input", () => {
   updateCardTitleCounter();
 });
 
+// 输入正文时，实时更新剩余字数。
+cardTextInput.addEventListener("input", () => {
+  updateCardTextCounter();
+});
+
 // 点击按钮时，恢复默认学习卡片。
 resetCardsButton.addEventListener("click", () => {
   resetInfoCards();
@@ -521,3 +544,4 @@ renderInfoCards();
 renderInterests();
 updateInterestEditorMode();
 updateCardTitleCounter();
+updateCardTextCounter();
