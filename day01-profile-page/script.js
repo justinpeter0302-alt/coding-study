@@ -26,9 +26,22 @@ const clearInterestsButton = document.querySelector("#clearInterestsButton");
 const cancelEditButton = document.querySelector("#cancelEditButton");
 // 找到兴趣区域的提示信息。
 const interestMessage = document.querySelector("#interestMessage");
+// 找到信息卡片容器。
+const infoGrid = document.querySelector("#infoGrid");
 
 // localStorage 只能保存字符串，所以我们用一个固定 key 找到兴趣数据。
 const interestsStorageKey = "day01-interests";
+// 对象适合保存一组有关联的信息，比如一张卡片的标题和正文。
+const infoCards = [
+  {
+    title: "今天学习",
+    text: "HTML 负责网页结构，CSS 负责样式，JavaScript 负责交互。",
+  },
+  {
+    title: "近期目标",
+    text: "先做出简单页面，再逐步学习 React、后端、数据库和部署。",
+  },
+];
 // 默认兴趣用于第一次打开页面，或者本地没有保存数据时。
 const defaultInterests = ["Vibe coding", "弹吉他", "健身"];
 // 用数组保存兴趣数据。let 允许我们后面把它替换成本地读取到的数据。
@@ -76,6 +89,24 @@ function updateInterestEditorMode() {
 
   addInterestButton.textContent = "保存修改";
   cancelEditButton.classList.remove("hidden");
+}
+
+// 根据 infoCards 对象数组，生成页面上的信息卡片。
+function renderInfoCards() {
+  infoGrid.innerHTML = "";
+
+  infoCards.forEach((card) => {
+    const article = document.createElement("article");
+    const title = document.createElement("h2");
+    const text = document.createElement("p");
+
+    // 通过对象的属性名读取数据。
+    title.textContent = card.title;
+    text.textContent = card.text;
+
+    article.append(title, text);
+    infoGrid.append(article);
+  });
 }
 
 // 根据 interests 数组和搜索关键词，重新生成页面上的兴趣列表。
@@ -318,5 +349,6 @@ clearInterestsButton.addEventListener("click", () => {
 });
 
 // 页面刚打开时，先把默认兴趣渲染出来。
+renderInfoCards();
 renderInterests();
 updateInterestEditorMode();
