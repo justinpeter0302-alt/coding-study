@@ -72,12 +72,14 @@ const cardTextMaxLength = 60;
 // 对象适合保存一组有关联的信息，比如一张卡片的标题和正文。
 const defaultInfoCards = [
   {
+    id: "default-today",
     title: "今天学习",
     text: "HTML 负责网页结构，CSS 负责样式，JavaScript 负责交互。",
     level: "基础",
     completed: true,
   },
   {
+    id: "default-goal",
     title: "近期目标",
     text: "先做出简单页面，再逐步学习 React、后端、数据库和部署。",
     level: "计划",
@@ -92,8 +94,8 @@ let infoCards = loadInfoCards();
 let interests = loadInterests();
 // null 表示当前没有在编辑；数字表示正在编辑的兴趣下标。
 let editingInterestIndex = null;
-// null 表示当前没有在编辑卡片；数字表示正在编辑的卡片下标。
-let editingCardIndex = null;
+// null 表示当前没有在编辑卡片；字符串表示正在编辑的卡片 id。
+let editingCardId = null;
 
 // 从浏览器本地读取兴趣数组。
 function loadInterests() {
@@ -118,14 +120,40 @@ function loadInfoCards() {
   const savedInfoCards = localStorage.getItem(infoCardsStorageKey);
 
   if (savedInfoCards === null) {
-    return [...defaultInfoCards];
+    return cloneDefaultInfoCards();
   }
 
   try {
-    return JSON.parse(savedInfoCards);
+    return normalizeInfoCards(JSON.parse(savedInfoCards));
   } catch {
-    return [...defaultInfoCards];
+    return cloneDefaultInfoCards();
   }
+}
+
+// 创建一个足够唯一的卡片 id，用来稳定识别每一张卡片。
+function createCardId() {
+  return `card-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+// 复制默认卡片，避免页面数据直接改到 defaultInfoCards。
+function cloneDefaultInfoCards() {
+  return defaultInfoCards.map((card) => {
+    return { ...card };
+  });
+}
+
+// 兼容旧数据：如果以前保存的卡片没有 id，就补上一个 id。
+function normalizeInfoCards(cards) {
+  return cards.map((card) => {
+    if (card.id !== undefined) {
+      return card;
+    }
+
+    return {
+      ...card,
+      id: createCardId(),
+    };
+  });
 }
 
 // 把当前兴趣数组保存到浏览器本地。
@@ -159,7 +187,7 @@ function updateInterestEditorMode() {
 
 // 根据是否处于卡片编辑状态，更新按钮文字和取消按钮显示。
 function updateCardEditorMode() {
-  if (editingCardIndex === null) {
+  if (editingCardId === null) {
     addCardButton.textContent = "添加卡片";
     cancelCardEditButton.classList.add("hidden");
     return;
@@ -219,30 +247,27 @@ function renderInfoCards() {
   const levelFilter = cardLevelFilter.value;
   const sortType = cardSortSelect.value;
   const visibleInfoCards = infoCards
-    .map((card, index) => {
-      return { card, index };
-    })
-    .filter((item) => {
+    .filter((card) => {
       const isStatusMatched =
         statusFilter === "all" ||
-        (statusFilter === "completed" && item.card.completed) ||
-        (statusFilter === "pending" && !item.card.completed);
-      const isLevelMatched = levelFilter === "all" || item.card.level === levelFilter;
-      const isSearchMatched = item.card.title.toLowerCase().includes(searchKeyword);
+        (statusFilter === "completed" && card.completed) ||
+        (statusFilter === "pending" && !card.completed);
+      const isLevelMatched = levelFilter === "all" || card.level === levelFilter;
+      const isSearchMatched = card.title.toLowerCase().includes(searchKeyword);
 
       return isSearchMatched && isStatusMatched && isLevelMatched;
     });
   const sortedInfoCards = [...visibleInfoCards].sort((firstItem, secondItem) => {
     if (sortType === "title") {
-      return firstItem.card.title.localeCompare(secondItem.card.title, "zh-CN");
+      return firstItem.title.localeCompare(secondItem.title, "zh-CN");
     }
 
     if (sortType === "completed") {
-      return Number(secondItem.card.completed) - Number(firstItem.card.completed);
+      return Number(secondItem.completed) - Number(firstItem.completed);
     }
 
     if (sortType === "pending") {
-      return Number(firstItem.card.completed) - Number(secondItem.card.completed);
+      return Number(firstItem.completed) - Number(secondItem.completed);
     }
 
     return 0;
@@ -270,9 +295,7 @@ function renderInfoCards() {
     return;
   }
 
-  sortedInfoCards.forEach((item) => {
-    const card = item.card;
-    const index = item.index;
+  sortedInfoCards.forEach((card) => {
     const article = document.createElement("article");
     const cardHeader = document.createElement("div");
     const cardTitleGroup = document.createElement("div");
@@ -293,15 +316,15 @@ function renderInfoCards() {
     editButton.textContent = "编辑";
     editButton.type = "button";
     editButton.className = "edit-card";
-    editButton.dataset.index = index;
+    editButton.dataset.id = card.id;
     toggleButton.textContent = card.completed ? "取消完成" : "标记完成";
     toggleButton.type = "button";
     toggleButton.className = "toggle-card";
-    toggleButton.dataset.index = index;
+    toggleButton.dataset.id = card.id;
     deleteButton.textContent = "删除";
     deleteButton.type = "button";
     deleteButton.className = "delete-card";
-    deleteButton.dataset.index = index;
+    deleteButton.dataset.id = card.id;
     text.textContent = card.text;
 
     cardTitleGroup.className = "card-title-group";
@@ -372,8 +395,8 @@ function addInfoCard() {
   }
 
   // 检查标题是否重复；编辑时要跳过自己，避免原标题被误判为重复。
-  const isDuplicateTitle = infoCards.some((card, index) => {
-    if (index === editingCardIndex) {
+  const isDuplicateTitle = infoCards.some((card) => {
+    if (card.id === editingCardId) {
       return false;
     }
 
@@ -385,7 +408,18 @@ function addInfoCard() {
     return;
   }
 
-  if (editingCardIndex !== null) {
+  if (editingCardId !== null) {
+    const editingCardIndex = infoCards.findIndex((card) => {
+      return card.id === editingCardId;
+    });
+
+    if (editingCardIndex === -1) {
+      editingCardId = null;
+      updateCardEditorMode();
+      showMessage(cardMessage, "正在编辑的卡片不存在，请重新选择。", "error");
+      return;
+    }
+
     const oldTitle = infoCards[editingCardIndex].title;
 
     // 编辑时只替换标题、正文和等级，保留原来的完成状态。
@@ -395,7 +429,7 @@ function addInfoCard() {
       text,
       level,
     };
-    editingCardIndex = null;
+    editingCardId = null;
     saveInfoCards();
     renderInfoCards();
     updateCardEditorMode();
@@ -406,6 +440,7 @@ function addInfoCard() {
 
   // 新卡片是一个对象，对象里保存这张卡片需要的多个字段。
   const newCard = {
+    id: createCardId(),
     title,
     text,
     level,
@@ -421,7 +456,7 @@ function addInfoCard() {
 
 // 退出卡片编辑模式，并清空表单。
 function cancelCardEdit() {
-  editingCardIndex = null;
+  editingCardId = null;
   clearCardForm();
   updateCardEditorMode();
   showMessage(cardMessage, "已取消编辑卡片。", "info");
@@ -437,10 +472,8 @@ function resetInfoCards() {
   }
 
   // 复制默认对象数组，避免直接共用 defaultInfoCards。
-  infoCards = defaultInfoCards.map((card) => {
-    return { ...card };
-  });
-  editingCardIndex = null;
+  infoCards = cloneDefaultInfoCards();
+  editingCardId = null;
   clearCardForm();
   saveInfoCards();
   renderInfoCards();
@@ -651,12 +684,19 @@ cardTextInput.addEventListener("keydown", (event) => {
 infoGrid.addEventListener("click", (event) => {
   const clickedElement = event.target;
 
-  const cardIndex = Number(clickedElement.dataset.index);
+  const cardId = clickedElement.dataset.id;
+  const cardIndex = infoCards.findIndex((card) => {
+    return card.id === cardId;
+  });
+
+  if (cardIndex === -1) {
+    return;
+  }
 
   if (clickedElement.classList.contains("edit-card")) {
     const card = infoCards[cardIndex];
 
-    editingCardIndex = cardIndex;
+    editingCardId = card.id;
     cardTitleInput.value = card.title;
     cardTextInput.value = card.text;
     cardLevelInput.value = card.level;
@@ -690,12 +730,10 @@ infoGrid.addEventListener("click", (event) => {
 
   infoCards.splice(cardIndex, 1);
 
-  // 删除卡片后，数组下标会变化，所以编辑状态也要同步调整。
-  if (cardIndex === editingCardIndex) {
-    editingCardIndex = null;
+  // 因为编辑状态记录的是 id，所以删除其他卡片不会影响当前编辑对象。
+  if (cardId === editingCardId) {
+    editingCardId = null;
     clearCardForm();
-  } else if (editingCardIndex !== null && cardIndex < editingCardIndex) {
-    editingCardIndex -= 1;
   }
 
   saveInfoCards();
