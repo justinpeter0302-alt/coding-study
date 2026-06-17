@@ -14,6 +14,8 @@ const interestList = document.querySelector("#interestList");
 const interestCount = document.querySelector("#interestCount");
 // 找到搜索兴趣的输入框。
 const searchInput = document.querySelector("#searchInput");
+// 找到兴趣置顶筛选框。
+const interestPinnedFilter = document.querySelector("#interestPinnedFilter");
 // 找到新增兴趣的输入框。
 const interestInput = document.querySelector("#interestInput");
 // 找到兴趣颜色选择框。
@@ -546,9 +548,13 @@ function resetInfoCards() {
 // 根据 interests 数组和搜索关键词，重新生成页面上的兴趣列表。
 function renderInterests() {
   const searchKeyword = searchInput.value.trim().toLowerCase();
+  const pinnedFilter = interestPinnedFilter.value;
   // filter 会返回一个新数组，不会修改原始 interests。
   const visibleInterests = interests.filter((interest) => {
-    return interest.name.toLowerCase().includes(searchKeyword);
+    const isSearchMatched = interest.name.toLowerCase().includes(searchKeyword);
+    const isPinnedMatched = pinnedFilter === "all" || interest.pinned;
+
+    return isSearchMatched && isPinnedMatched;
   });
   // 复制一份可见兴趣再排序，避免直接改变原始 interests 顺序。
   const sortedInterests = [...visibleInterests].sort((firstItem, secondItem) => {
@@ -559,7 +565,9 @@ function renderInterests() {
   interestList.innerHTML = "";
   // length 表示数组里有多少项。
   interestCount.textContent =
-    searchKeyword === "" ? `${interests.length} 项` : `${sortedInterests.length}/${interests.length} 项`;
+    searchKeyword === "" && pinnedFilter === "all"
+      ? `${interests.length} 项`
+      : `${sortedInterests.length}/${interests.length} 项`;
 
   // 如果数组为空，就显示一个空状态提示。
   if (interests.length === 0) {
@@ -848,6 +856,11 @@ interestInput.addEventListener("keydown", (event) => {
 
 // 输入搜索关键词时，实时重新渲染可见列表。
 searchInput.addEventListener("input", () => {
+  renderInterests();
+});
+
+// 切换置顶筛选时，重新渲染兴趣列表。
+interestPinnedFilter.addEventListener("change", () => {
   renderInterests();
 });
 

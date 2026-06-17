@@ -389,6 +389,16 @@ article p {
   margin-bottom: 28px;
 }
 
+.search-editor {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.search-editor label {
+  grid-column: 1 / -1;
+}
+
 .interest-actions {
   display: flex;
   gap: 10px;
@@ -621,5 +631,9 @@ body.dark .danger-button:hover {
 
   .interest-actions {
     flex-direction: column;
+  }
+
+  .search-editor {
+    grid-template-columns: 1fr;
   }
 }
