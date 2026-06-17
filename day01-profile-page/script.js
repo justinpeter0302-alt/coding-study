@@ -16,6 +16,8 @@ const interestCount = document.querySelector("#interestCount");
 const searchInput = document.querySelector("#searchInput");
 // 找到兴趣置顶筛选框。
 const interestPinnedFilter = document.querySelector("#interestPinnedFilter");
+// 找到兴趣颜色筛选框。
+const interestColorFilter = document.querySelector("#interestColorFilter");
 // 找到兴趣筛选说明。
 const interestFilterSummary = document.querySelector("#interestFilterSummary");
 // 找到新增兴趣的输入框。
@@ -557,8 +559,13 @@ function resetInfoCards() {
 }
 
 // 根据当前兴趣筛选条件，生成一段说明文字。
-function renderInterestFilterSummary(searchKeyword, pinnedFilter) {
+function renderInterestFilterSummary(searchKeyword, pinnedFilter, colorFilter) {
   const summaryParts = [];
+  const colorTextMap = {
+    blue: "蓝色兴趣",
+    green: "绿色兴趣",
+    orange: "橙色兴趣",
+  };
 
   if (searchKeyword !== "") {
     summaryParts.push(`名称包含“${searchKeyword}”`);
@@ -566,6 +573,10 @@ function renderInterestFilterSummary(searchKeyword, pinnedFilter) {
 
   if (pinnedFilter === "pinned") {
     summaryParts.push("只看置顶");
+  }
+
+  if (colorFilter !== "all") {
+    summaryParts.push(colorTextMap[colorFilter]);
   }
 
   interestFilterSummary.textContent =
@@ -576,12 +587,14 @@ function renderInterestFilterSummary(searchKeyword, pinnedFilter) {
 function renderInterests() {
   const searchKeyword = searchInput.value.trim().toLowerCase();
   const pinnedFilter = interestPinnedFilter.value;
+  const colorFilter = interestColorFilter.value;
   // filter 会返回一个新数组，不会修改原始 interests。
   const visibleInterests = interests.filter((interest) => {
     const isSearchMatched = interest.name.toLowerCase().includes(searchKeyword);
     const isPinnedMatched = pinnedFilter === "all" || interest.pinned;
+    const isColorMatched = colorFilter === "all" || interest.color === colorFilter;
 
-    return isSearchMatched && isPinnedMatched;
+    return isSearchMatched && isPinnedMatched && isColorMatched;
   });
   // 复制一份可见兴趣再排序，避免直接改变原始 interests 顺序。
   const sortedInterests = [...visibleInterests].sort((firstItem, secondItem) => {
@@ -590,10 +603,10 @@ function renderInterests() {
 
   // 先清空列表，避免重复渲染出多份 li。
   interestList.innerHTML = "";
-  renderInterestFilterSummary(searchKeyword, pinnedFilter);
+  renderInterestFilterSummary(searchKeyword, pinnedFilter, colorFilter);
   // length 表示数组里有多少项。
   interestCount.textContent =
-    searchKeyword === "" && pinnedFilter === "all"
+    searchKeyword === "" && pinnedFilter === "all" && colorFilter === "all"
       ? `${interests.length} 项`
       : `${sortedInterests.length}/${interests.length} 项`;
 
@@ -904,6 +917,11 @@ searchInput.addEventListener("input", () => {
 
 // 切换置顶筛选时，重新渲染兴趣列表。
 interestPinnedFilter.addEventListener("change", () => {
+  renderInterests();
+});
+
+// 切换颜色筛选时，重新渲染兴趣列表。
+interestColorFilter.addEventListener("change", () => {
   renderInterests();
 });
 
