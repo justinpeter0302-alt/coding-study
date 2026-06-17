@@ -362,6 +362,20 @@ function addInfoCard() {
     return;
   }
 
+  // 检查标题是否重复；编辑时要跳过自己，避免原标题被误判为重复。
+  const isDuplicateTitle = infoCards.some((card, index) => {
+    if (index === editingCardIndex) {
+      return false;
+    }
+
+    return card.title.toLowerCase() === title.toLowerCase();
+  });
+
+  if (isDuplicateTitle) {
+    showMessage(cardMessage, `“${title}”这个卡片标题已经存在。`, "error");
+    return;
+  }
+
   if (editingCardIndex !== null) {
     const oldTitle = infoCards[editingCardIndex].title;
 
