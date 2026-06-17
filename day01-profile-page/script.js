@@ -94,16 +94,19 @@ const defaultInterests = [
     id: "default-vibe-coding",
     name: "Vibe coding",
     color: "blue",
+    pinned: false,
   },
   {
     id: "default-guitar",
     name: "弹吉他",
     color: "orange",
+    pinned: false,
   },
   {
     id: "default-fitness",
     name: "健身",
     color: "green",
+    pinned: false,
   },
 ];
 // 用对象数组保存卡片数据，页面显示什么由它决定。
@@ -194,6 +197,7 @@ function normalizeInterests(savedInterests) {
         id: createInterestId(),
         name: interest,
         color: "blue",
+        pinned: false,
       };
     }
 
@@ -201,6 +205,7 @@ function normalizeInterests(savedInterests) {
       return {
         ...interest,
         color: interest.color ?? "blue",
+        pinned: interest.pinned ?? false,
       };
     }
 
@@ -208,6 +213,7 @@ function normalizeInterests(savedInterests) {
       ...interest,
       id: createInterestId(),
       color: "blue",
+      pinned: false,
     };
   });
 }
@@ -544,12 +550,16 @@ function renderInterests() {
   const visibleInterests = interests.filter((interest) => {
     return interest.name.toLowerCase().includes(searchKeyword);
   });
+  // 复制一份可见兴趣再排序，避免直接改变原始 interests 顺序。
+  const sortedInterests = [...visibleInterests].sort((firstItem, secondItem) => {
+    return Number(secondItem.pinned) - Number(firstItem.pinned);
+  });
 
   // 先清空列表，避免重复渲染出多份 li。
   interestList.innerHTML = "";
   // length 表示数组里有多少项。
   interestCount.textContent =
-    searchKeyword === "" ? `${interests.length} 项` : `${visibleInterests.length}/${interests.length} 项`;
+    searchKeyword === "" ? `${interests.length} 项` : `${sortedInterests.length}/${interests.length} 项`;
 
   // 如果数组为空，就显示一个空状态提示。
   if (interests.length === 0) {
@@ -562,7 +572,7 @@ function renderInterests() {
   }
 
   // 如果有数据但搜索结果为空，就显示“没有匹配结果”。
-  if (visibleInterests.length === 0) {
+  if (sortedInterests.length === 0) {
     const emptyItem = document.createElement("li");
 
     emptyItem.textContent = "没有匹配的兴趣。";
@@ -572,14 +582,20 @@ function renderInterests() {
   }
 
   // forEach 会遍历数组里的每一项。
-  visibleInterests.forEach((interest) => {
+  sortedInterests.forEach((interest) => {
     const listItem = document.createElement("li");
     const interestText = document.createElement("span");
+    const pinButton = document.createElement("button");
     const editButton = document.createElement("button");
     const deleteButton = document.createElement("button");
 
     listItem.className = `interest-item interest-${interest.color}`;
+    listItem.classList.toggle("pinned-interest", interest.pinned);
     interestText.textContent = interest.name;
+    pinButton.textContent = interest.pinned ? "取消置顶" : "置顶";
+    pinButton.type = "button";
+    pinButton.className = "pin-interest";
+    pinButton.dataset.id = interest.id;
     editButton.textContent = "编辑";
     editButton.type = "button";
     editButton.className = "edit-interest";
@@ -590,7 +606,7 @@ function renderInterests() {
     // dataset 可以把数据藏在 HTML 元素上，这里保存它的唯一 id。
     deleteButton.dataset.id = interest.id;
 
-    listItem.append(interestText, editButton, deleteButton);
+    listItem.append(interestText, pinButton, editButton, deleteButton);
     interestList.append(listItem);
   });
 }
@@ -678,6 +694,7 @@ function saveInterest() {
     id: createInterestId(),
     name: newInterest,
     color: newInterestColor,
+    pinned: false,
   });
   saveInterests();
   renderInterests();
@@ -844,6 +861,20 @@ interestList.addEventListener("click", (event) => {
   });
 
   if (interestIndex === -1) {
+    return;
+  }
+
+  if (clickedElement.classList.contains("pin-interest")) {
+    interests[interestIndex].pinned = !interests[interestIndex].pinned;
+    saveInterests();
+    renderInterests();
+    showMessage(
+      interestMessage,
+      interests[interestIndex].pinned
+        ? `已置顶兴趣：${interests[interestIndex].name}`
+        : `已取消置顶：${interests[interestIndex].name}`,
+      "success",
+    );
     return;
   }
 

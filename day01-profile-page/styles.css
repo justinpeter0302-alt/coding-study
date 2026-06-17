@@ -349,6 +349,15 @@ article p {
   background: #fff4d6;
 }
 
+.interest-list .pinned-interest::before {
+  content: "置顶";
+  padding: 2px 6px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #2f57eb;
+  font-size: 12px;
+}
+
 /* 空状态提示会在兴趣列表为空时出现。 */
 .interest-list .empty-item {
   color: #6b7280;
@@ -356,6 +365,7 @@ article p {
 }
 
 /* 编辑和删除按钮放在兴趣标签内部，所以尺寸比普通按钮更小。 */
+.pin-interest,
 .edit-interest,
 .delete-interest {
   min-height: 28px;
@@ -366,6 +376,7 @@ article p {
   font-size: 14px;
 }
 
+.pin-interest:hover,
 .edit-interest:hover,
 .delete-interest:hover {
   color: #ffffff;
@@ -534,6 +545,12 @@ body.dark .interest-list .interest-orange {
   background: #4a3412;
 }
 
+body.dark .interest-list .pinned-interest::before {
+  color: #ffffff;
+  background: #2f57eb;
+}
+
+body.dark .pin-interest,
 body.dark .edit-interest,
 body.dark .delete-interest {
   border-color: #4b5f93;
@@ -541,6 +558,7 @@ body.dark .delete-interest {
   background: #1b202b;
 }
 
+body.dark .pin-interest:hover,
 body.dark .edit-interest:hover,
 body.dark .delete-interest:hover {
   background: #2f57eb;
