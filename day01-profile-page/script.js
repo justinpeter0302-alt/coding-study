@@ -638,6 +638,12 @@ function renderInterests() {
   });
 }
 
+// 清空兴趣表单，并把颜色选择恢复到默认蓝色。
+function clearInterestForm() {
+  interestInput.value = "";
+  interestColorInput.value = "blue";
+}
+
 // 当用户点击按钮时，执行里面的代码。
 themeButton.addEventListener("click", () => {
   // toggle 会自动切换 dark class：没有就添加，有就移除。
@@ -711,8 +717,7 @@ function saveInterest() {
     renderInterests();
     updateInterestEditorMode();
     showMessage(interestMessage, `已将“${oldInterestName}”修改为“${newInterest}”`, "success");
-    interestInput.value = "";
-    interestColorInput.value = "blue";
+    clearInterestForm();
     return;
   }
 
@@ -726,8 +731,7 @@ function saveInterest() {
   saveInterests();
   renderInterests();
   showMessage(interestMessage, `已添加兴趣：${newInterest}`, "success");
-  interestInput.value = "";
-  interestColorInput.value = "blue";
+  clearInterestForm();
 }
 
 // 当用户点击“保存名字”按钮时，读取输入框内容并更新页面。
@@ -929,8 +933,7 @@ interestList.addEventListener("click", (event) => {
     // 因为编辑状态记录的是 id，所以删除其他兴趣不会影响当前编辑对象。
     if (interestId === editingInterestId) {
       editingInterestId = null;
-      interestInput.value = "";
-      interestColorInput.value = "blue";
+      clearInterestForm();
     }
 
     saveInterests();
@@ -943,8 +946,7 @@ interestList.addEventListener("click", (event) => {
 // 取消编辑时，清空输入框并恢复为新增模式。
 cancelEditButton.addEventListener("click", () => {
   editingInterestId = null;
-  interestInput.value = "";
-  interestColorInput.value = "blue";
+  clearInterestForm();
   updateInterestEditorMode();
   showMessage(interestMessage, "已取消编辑。", "info");
 });
@@ -962,8 +964,7 @@ resetInterestsButton.addEventListener("click", () => {
   // 复制默认对象数组，避免直接共用 defaultInterests 这个原始数组。
   interests = cloneDefaultInterests();
   editingInterestId = null;
-  interestInput.value = "";
-  interestColorInput.value = "blue";
+  clearInterestForm();
   saveInterests();
   renderInterests();
   updateInterestEditorMode();
@@ -987,8 +988,7 @@ clearInterestsButton.addEventListener("click", () => {
   // 清空数据源，并保存空数组。
   interests = [];
   editingInterestId = null;
-  interestInput.value = "";
-  interestColorInput.value = "blue";
+  clearInterestForm();
   saveInterests();
   renderInterests();
   updateInterestEditorMode();
