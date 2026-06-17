@@ -689,7 +689,15 @@ infoGrid.addEventListener("click", (event) => {
   }
 
   infoCards.splice(cardIndex, 1);
-  editingCardIndex = null;
+
+  // 删除卡片后，数组下标会变化，所以编辑状态也要同步调整。
+  if (cardIndex === editingCardIndex) {
+    editingCardIndex = null;
+    clearCardForm();
+  } else if (editingCardIndex !== null && cardIndex < editingCardIndex) {
+    editingCardIndex -= 1;
+  }
+
   saveInfoCards();
   renderInfoCards();
   updateCardEditorMode();
