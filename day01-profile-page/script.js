@@ -341,6 +341,15 @@ function updateCardTextCounter() {
   updateCounter(cardTextInput, cardTextCounter, cardTextMaxLength, 5, "正文还可以输入");
 }
 
+// 清空卡片表单，并把选择框恢复到默认状态。
+function clearCardForm() {
+  cardTitleInput.value = "";
+  cardTextInput.value = "";
+  cardLevelInput.value = "基础";
+  updateCardTitleCounter();
+  updateCardTextCounter();
+}
+
 // 根据表单内容创建一个新卡片对象，并添加到 infoCards 数组。
 function addInfoCard() {
   const title = cardTitleInput.value.trim();
@@ -391,10 +400,7 @@ function addInfoCard() {
     renderInfoCards();
     updateCardEditorMode();
     showMessage(cardMessage, `已将“${oldTitle}”修改为“${title}”。`, "success");
-    cardTitleInput.value = "";
-    cardTextInput.value = "";
-    updateCardTitleCounter();
-    updateCardTextCounter();
+    clearCardForm();
     return;
   }
 
@@ -410,21 +416,14 @@ function addInfoCard() {
   saveInfoCards();
   renderInfoCards();
   showMessage(cardMessage, `已添加卡片：${title}`, "success");
-  cardTitleInput.value = "";
-  cardTextInput.value = "";
-  updateCardTitleCounter();
-  updateCardTextCounter();
+  clearCardForm();
 }
 
 // 退出卡片编辑模式，并清空表单。
 function cancelCardEdit() {
   editingCardIndex = null;
-  cardTitleInput.value = "";
-  cardTextInput.value = "";
-  cardLevelInput.value = "基础";
+  clearCardForm();
   updateCardEditorMode();
-  updateCardTitleCounter();
-  updateCardTextCounter();
   showMessage(cardMessage, "已取消编辑卡片。", "info");
 }
 
@@ -442,13 +441,10 @@ function resetInfoCards() {
     return { ...card };
   });
   editingCardIndex = null;
-  cardTitleInput.value = "";
-  cardTextInput.value = "";
+  clearCardForm();
   saveInfoCards();
   renderInfoCards();
   updateCardEditorMode();
-  updateCardTitleCounter();
-  updateCardTextCounter();
   showMessage(cardMessage, "学习卡片已恢复默认。", "success");
 }
 
