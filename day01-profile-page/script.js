@@ -36,6 +36,8 @@ const cardSearchInput = document.querySelector("#cardSearchInput");
 const cardStatusFilter = document.querySelector("#cardStatusFilter");
 // 找到学习卡片等级筛选框。
 const cardLevelFilter = document.querySelector("#cardLevelFilter");
+// 找到学习卡片排序选择框。
+const cardSortSelect = document.querySelector("#cardSortSelect");
 // 找到清空学习卡片筛选按钮。
 const clearCardFiltersButton = document.querySelector("#clearCardFiltersButton");
 // 找到学习卡片筛选说明。
@@ -167,7 +169,7 @@ function renderCardStats() {
 }
 
 // 根据当前筛选条件，生成一段说明文字。
-function renderCardFilterSummary(searchKeyword, statusFilter, levelFilter) {
+function renderCardFilterSummary(searchKeyword, statusFilter, levelFilter, sortType) {
   const summaryParts = [];
 
   if (searchKeyword !== "") {
@@ -186,6 +188,10 @@ function renderCardFilterSummary(searchKeyword, statusFilter, levelFilter) {
     summaryParts.push(`${levelFilter}等级`);
   }
 
+  if (sortType !== "default") {
+    summaryParts.push(`排序：${cardSortSelect.options[cardSortSelect.selectedIndex].text}`);
+  }
+
   cardFilterSummary.textContent =
     summaryParts.length === 0 ? "当前显示全部学习卡片。" : `当前筛选：${summaryParts.join(" / ")}`;
 }
@@ -195,6 +201,7 @@ function renderInfoCards() {
   const searchKeyword = cardSearchInput.value.trim().toLowerCase();
   const statusFilter = cardStatusFilter.value;
   const levelFilter = cardLevelFilter.value;
+  const sortType = cardSortSelect.value;
   const visibleInfoCards = infoCards
     .map((card, index) => {
       return { card, index };
@@ -209,10 +216,25 @@ function renderInfoCards() {
 
       return isSearchMatched && isStatusMatched && isLevelMatched;
     });
+  const sortedInfoCards = [...visibleInfoCards].sort((firstItem, secondItem) => {
+    if (sortType === "title") {
+      return firstItem.card.title.localeCompare(secondItem.card.title, "zh-CN");
+    }
+
+    if (sortType === "completed") {
+      return Number(secondItem.card.completed) - Number(firstItem.card.completed);
+    }
+
+    if (sortType === "pending") {
+      return Number(firstItem.card.completed) - Number(secondItem.card.completed);
+    }
+
+    return 0;
+  });
 
   infoGrid.innerHTML = "";
   renderCardStats();
-  renderCardFilterSummary(searchKeyword, statusFilter, levelFilter);
+  renderCardFilterSummary(searchKeyword, statusFilter, levelFilter, sortType);
 
   if (infoCards.length === 0) {
     const emptyCard = document.createElement("article");
@@ -223,7 +245,7 @@ function renderInfoCards() {
     return;
   }
 
-  if (visibleInfoCards.length === 0) {
+  if (sortedInfoCards.length === 0) {
     const emptyCard = document.createElement("article");
 
     emptyCard.textContent = "当前筛选条件下没有学习卡片。";
@@ -232,7 +254,7 @@ function renderInfoCards() {
     return;
   }
 
-  visibleInfoCards.forEach((item) => {
+  sortedInfoCards.forEach((item) => {
     const card = item.card;
     const index = item.index;
     const article = document.createElement("article");
@@ -275,6 +297,7 @@ function clearCardFilters() {
   cardSearchInput.value = "";
   cardStatusFilter.value = "all";
   cardLevelFilter.value = "all";
+  cardSortSelect.value = "default";
   renderInfoCards();
   showMessage(cardMessage, "已清空筛选条件。", "info");
 }
@@ -523,6 +546,11 @@ cardSearchInput.addEventListener("input", () => {
 
 // 切换等级筛选时，重新渲染可见卡片。
 cardLevelFilter.addEventListener("change", () => {
+  renderInfoCards();
+});
+
+// 切换排序方式时，重新渲染可见卡片。
+cardSortSelect.addEventListener("change", () => {
   renderInfoCards();
 });
 
