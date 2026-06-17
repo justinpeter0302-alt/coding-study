@@ -334,6 +334,21 @@ article p {
   background: #edf1ff;
 }
 
+.interest-list .interest-blue {
+  color: #2541b2;
+  background: #edf1ff;
+}
+
+.interest-list .interest-green {
+  color: #137333;
+  background: #e6f4ea;
+}
+
+.interest-list .interest-orange {
+  color: #8a4b00;
+  background: #fff4d6;
+}
+
 /* 空状态提示会在兴趣列表为空时出现。 */
 .interest-list .empty-item {
   color: #6b7280;
@@ -502,6 +517,21 @@ body.dark .interest-list .empty-item {
 body.dark .interest-list li {
   color: #dce5ff;
   background: #2b3a63;
+}
+
+body.dark .interest-list .interest-blue {
+  color: #dce5ff;
+  background: #2b3a63;
+}
+
+body.dark .interest-list .interest-green {
+  color: #ceead6;
+  background: #1f3b2c;
+}
+
+body.dark .interest-list .interest-orange {
+  color: #ffddb0;
+  background: #4a3412;
 }
 
 body.dark .edit-interest,

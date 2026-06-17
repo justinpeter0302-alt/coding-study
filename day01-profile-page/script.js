@@ -16,6 +16,8 @@ const interestCount = document.querySelector("#interestCount");
 const searchInput = document.querySelector("#searchInput");
 // 找到新增兴趣的输入框。
 const interestInput = document.querySelector("#interestInput");
+// 找到兴趣颜色选择框。
+const interestColorInput = document.querySelector("#interestColorInput");
 // 找到新增兴趣的按钮。
 const addInterestButton = document.querySelector("#addInterestButton");
 // 找到重置兴趣的按钮。
@@ -91,14 +93,17 @@ const defaultInterests = [
   {
     id: "default-vibe-coding",
     name: "Vibe coding",
+    color: "blue",
   },
   {
     id: "default-guitar",
     name: "弹吉他",
+    color: "orange",
   },
   {
     id: "default-fitness",
     name: "健身",
+    color: "green",
   },
 ];
 // 用对象数组保存卡片数据，页面显示什么由它决定。
@@ -188,16 +193,21 @@ function normalizeInterests(savedInterests) {
       return {
         id: createInterestId(),
         name: interest,
+        color: "blue",
       };
     }
 
     if (interest.id !== undefined) {
-      return interest;
+      return {
+        ...interest,
+        color: interest.color ?? "blue",
+      };
     }
 
     return {
       ...interest,
       id: createInterestId(),
+      color: "blue",
     };
   });
 }
@@ -568,6 +578,7 @@ function renderInterests() {
     const editButton = document.createElement("button");
     const deleteButton = document.createElement("button");
 
+    listItem.className = `interest-item interest-${interest.color}`;
     interestText.textContent = interest.name;
     editButton.textContent = "编辑";
     editButton.type = "button";
@@ -610,6 +621,7 @@ function saveName() {
 // 添加或更新兴趣的具体逻辑，按钮点击和回车提交都会调用它。
 function saveInterest() {
   const newInterest = interestInput.value.trim();
+  const newInterestColor = interestColorInput.value;
 
   if (newInterest === "") {
     showMessage(interestMessage, "请先输入一个兴趣。", "error");
@@ -649,6 +661,7 @@ function saveInterest() {
     interests[editingInterestIndex] = {
       ...interests[editingInterestIndex],
       name: newInterest,
+      color: newInterestColor,
     };
     editingInterestId = null;
     saveInterests();
@@ -656,6 +669,7 @@ function saveInterest() {
     updateInterestEditorMode();
     showMessage(interestMessage, `已将“${oldInterestName}”修改为“${newInterest}”`, "success");
     interestInput.value = "";
+    interestColorInput.value = "blue";
     return;
   }
 
@@ -663,11 +677,13 @@ function saveInterest() {
   interests.push({
     id: createInterestId(),
     name: newInterest,
+    color: newInterestColor,
   });
   saveInterests();
   renderInterests();
   showMessage(interestMessage, `已添加兴趣：${newInterest}`, "success");
   interestInput.value = "";
+  interestColorInput.value = "blue";
 }
 
 // 当用户点击“保存名字”按钮时，读取输入框内容并更新页面。
@@ -834,6 +850,7 @@ interestList.addEventListener("click", (event) => {
   if (clickedElement.classList.contains("edit-interest")) {
     editingInterestId = interests[interestIndex].id;
     interestInput.value = interests[interestIndex].name;
+    interestColorInput.value = interests[interestIndex].color;
     interestInput.focus();
     updateInterestEditorMode();
     showMessage(interestMessage, "正在编辑兴趣，修改后点击“保存修改”。", "info");
@@ -850,6 +867,7 @@ interestList.addEventListener("click", (event) => {
     if (interestId === editingInterestId) {
       editingInterestId = null;
       interestInput.value = "";
+      interestColorInput.value = "blue";
     }
 
     saveInterests();
@@ -863,6 +881,7 @@ interestList.addEventListener("click", (event) => {
 cancelEditButton.addEventListener("click", () => {
   editingInterestId = null;
   interestInput.value = "";
+  interestColorInput.value = "blue";
   updateInterestEditorMode();
   showMessage(interestMessage, "已取消编辑。", "info");
 });
@@ -881,6 +900,7 @@ resetInterestsButton.addEventListener("click", () => {
   interests = cloneDefaultInterests();
   editingInterestId = null;
   interestInput.value = "";
+  interestColorInput.value = "blue";
   saveInterests();
   renderInterests();
   updateInterestEditorMode();
@@ -905,6 +925,7 @@ clearInterestsButton.addEventListener("click", () => {
   interests = [];
   editingInterestId = null;
   interestInput.value = "";
+  interestColorInput.value = "blue";
   saveInterests();
   renderInterests();
   updateInterestEditorMode();
