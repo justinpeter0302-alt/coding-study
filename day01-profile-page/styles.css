@@ -393,6 +393,7 @@ article p {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
+  margin-bottom: 16px;
 }
 
 .search-editor label {

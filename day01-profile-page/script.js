@@ -16,6 +16,8 @@ const interestCount = document.querySelector("#interestCount");
 const searchInput = document.querySelector("#searchInput");
 // 找到兴趣置顶筛选框。
 const interestPinnedFilter = document.querySelector("#interestPinnedFilter");
+// 找到兴趣筛选说明。
+const interestFilterSummary = document.querySelector("#interestFilterSummary");
 // 找到新增兴趣的输入框。
 const interestInput = document.querySelector("#interestInput");
 // 找到兴趣颜色选择框。
@@ -545,6 +547,22 @@ function resetInfoCards() {
   showMessage(cardMessage, "学习卡片已恢复默认。", "success");
 }
 
+// 根据当前兴趣筛选条件，生成一段说明文字。
+function renderInterestFilterSummary(searchKeyword, pinnedFilter) {
+  const summaryParts = [];
+
+  if (searchKeyword !== "") {
+    summaryParts.push(`名称包含“${searchKeyword}”`);
+  }
+
+  if (pinnedFilter === "pinned") {
+    summaryParts.push("只看置顶");
+  }
+
+  interestFilterSummary.textContent =
+    summaryParts.length === 0 ? "当前显示全部兴趣。" : `当前筛选：${summaryParts.join(" / ")}`;
+}
+
 // 根据 interests 数组和搜索关键词，重新生成页面上的兴趣列表。
 function renderInterests() {
   const searchKeyword = searchInput.value.trim().toLowerCase();
@@ -563,6 +581,7 @@ function renderInterests() {
 
   // 先清空列表，避免重复渲染出多份 li。
   interestList.innerHTML = "";
+  renderInterestFilterSummary(searchKeyword, pinnedFilter);
   // length 表示数组里有多少项。
   interestCount.textContent =
     searchKeyword === "" && pinnedFilter === "all"
