@@ -87,13 +87,26 @@ const defaultInfoCards = [
   },
 ];
 // 默认兴趣用于第一次打开页面，或者本地没有保存数据时。
-const defaultInterests = ["Vibe coding", "弹吉他", "健身"];
+const defaultInterests = [
+  {
+    id: "default-vibe-coding",
+    name: "Vibe coding",
+  },
+  {
+    id: "default-guitar",
+    name: "弹吉他",
+  },
+  {
+    id: "default-fitness",
+    name: "健身",
+  },
+];
 // 用对象数组保存卡片数据，页面显示什么由它决定。
 let infoCards = loadInfoCards();
-// 用数组保存兴趣数据。let 允许我们后面把它替换成本地读取到的数据。
+// 用对象数组保存兴趣数据，每个兴趣都有自己的 id 和 name。
 let interests = loadInterests();
-// null 表示当前没有在编辑；数字表示正在编辑的兴趣下标。
-let editingInterestIndex = null;
+// null 表示当前没有在编辑；字符串表示正在编辑的兴趣 id。
+let editingInterestId = null;
 // null 表示当前没有在编辑卡片；字符串表示正在编辑的卡片 id。
 let editingCardId = null;
 
@@ -103,15 +116,15 @@ function loadInterests() {
 
   // 如果本地没有保存过数据，就使用默认兴趣。
   if (savedInterests === null) {
-    return [...defaultInterests];
+    return cloneDefaultInterests();
   }
 
   try {
     // JSON.parse 可以把 JSON 字符串还原成 JavaScript 数组。
-    return JSON.parse(savedInterests);
+    return normalizeInterests(JSON.parse(savedInterests));
   } catch {
     // 如果保存的数据坏掉了，就回到默认兴趣，避免页面打不开。
-    return [...defaultInterests];
+    return cloneDefaultInterests();
   }
 }
 
@@ -135,10 +148,22 @@ function createCardId() {
   return `card-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+// 创建一个足够唯一的兴趣 id，用来稳定识别每一个兴趣。
+function createInterestId() {
+  return `interest-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 // 复制默认卡片，避免页面数据直接改到 defaultInfoCards。
 function cloneDefaultInfoCards() {
   return defaultInfoCards.map((card) => {
     return { ...card };
+  });
+}
+
+// 复制默认兴趣，避免页面数据直接改到 defaultInterests。
+function cloneDefaultInterests() {
+  return defaultInterests.map((interest) => {
+    return { ...interest };
   });
 }
 
@@ -152,6 +177,27 @@ function normalizeInfoCards(cards) {
     return {
       ...card,
       id: createCardId(),
+    };
+  });
+}
+
+// 兼容旧数据：如果以前保存的是字符串兴趣，就转换成带 id 的对象。
+function normalizeInterests(savedInterests) {
+  return savedInterests.map((interest) => {
+    if (typeof interest === "string") {
+      return {
+        id: createInterestId(),
+        name: interest,
+      };
+    }
+
+    if (interest.id !== undefined) {
+      return interest;
+    }
+
+    return {
+      ...interest,
+      id: createInterestId(),
     };
   });
 }
@@ -175,7 +221,7 @@ function showMessage(element, text, type = "info") {
 
 // 根据是否处于编辑状态，更新按钮文字和取消按钮显示。
 function updateInterestEditorMode() {
-  if (editingInterestIndex === null) {
+  if (editingInterestId === null) {
     addInterestButton.textContent = "添加兴趣";
     cancelEditButton.classList.add("hidden");
     return;
@@ -485,13 +531,9 @@ function resetInfoCards() {
 function renderInterests() {
   const searchKeyword = searchInput.value.trim().toLowerCase();
   // filter 会返回一个新数组，不会修改原始 interests。
-  const visibleInterests = interests
-    .map((interest, index) => {
-      return { interest, index };
-    })
-    .filter((item) => {
-      return item.interest.toLowerCase().includes(searchKeyword);
-    });
+  const visibleInterests = interests.filter((interest) => {
+    return interest.name.toLowerCase().includes(searchKeyword);
+  });
 
   // 先清空列表，避免重复渲染出多份 li。
   interestList.innerHTML = "";
@@ -520,22 +562,22 @@ function renderInterests() {
   }
 
   // forEach 会遍历数组里的每一项。
-  visibleInterests.forEach((item) => {
+  visibleInterests.forEach((interest) => {
     const listItem = document.createElement("li");
     const interestText = document.createElement("span");
     const editButton = document.createElement("button");
     const deleteButton = document.createElement("button");
 
-    interestText.textContent = item.interest;
+    interestText.textContent = interest.name;
     editButton.textContent = "编辑";
     editButton.type = "button";
     editButton.className = "edit-interest";
-    editButton.dataset.index = item.index;
+    editButton.dataset.id = interest.id;
     deleteButton.textContent = "删除";
     deleteButton.type = "button";
     deleteButton.className = "delete-interest";
-    // dataset 可以把数据藏在 HTML 元素上，这里保存它在数组里的位置。
-    deleteButton.dataset.index = item.index;
+    // dataset 可以把数据藏在 HTML 元素上，这里保存它的唯一 id。
+    deleteButton.dataset.id = interest.id;
 
     listItem.append(interestText, editButton, deleteButton);
     interestList.append(listItem);
@@ -575,13 +617,13 @@ function saveInterest() {
   }
 
   // some 会检查数组中是否至少有一项满足条件。
-  const isDuplicate = interests.some((interest, index) => {
+  const isDuplicate = interests.some((interest) => {
     // 编辑时要跳过自己，否则原名字也会被当成重复。
-    if (index === editingInterestIndex) {
+    if (interest.id === editingInterestId) {
       return false;
     }
 
-    return interest.toLowerCase() === newInterest.toLowerCase();
+    return interest.name.toLowerCase() === newInterest.toLowerCase();
   });
 
   // 如果兴趣已经存在，就提示用户，并停止新增。
@@ -590,21 +632,38 @@ function saveInterest() {
     return;
   }
 
-  if (editingInterestIndex !== null) {
-    const oldInterest = interests[editingInterestIndex];
+  if (editingInterestId !== null) {
+    const editingInterestIndex = interests.findIndex((interest) => {
+      return interest.id === editingInterestId;
+    });
 
-    interests[editingInterestIndex] = newInterest;
-    editingInterestIndex = null;
+    if (editingInterestIndex === -1) {
+      editingInterestId = null;
+      updateInterestEditorMode();
+      showMessage(interestMessage, "正在编辑的兴趣不存在，请重新选择。", "error");
+      return;
+    }
+
+    const oldInterestName = interests[editingInterestIndex].name;
+
+    interests[editingInterestIndex] = {
+      ...interests[editingInterestIndex],
+      name: newInterest,
+    };
+    editingInterestId = null;
     saveInterests();
     renderInterests();
     updateInterestEditorMode();
-    showMessage(interestMessage, `已将“${oldInterest}”修改为“${newInterest}”`, "success");
+    showMessage(interestMessage, `已将“${oldInterestName}”修改为“${newInterest}”`, "success");
     interestInput.value = "";
     return;
   }
 
   // push 会把新内容添加到数组末尾。
-  interests.push(newInterest);
+  interests.push({
+    id: createInterestId(),
+    name: newInterest,
+  });
   saveInterests();
   renderInterests();
   showMessage(interestMessage, `已添加兴趣：${newInterest}`, "success");
@@ -763,10 +822,18 @@ searchInput.addEventListener("input", () => {
 interestList.addEventListener("click", (event) => {
   // event.target 表示用户实际点击到的元素。
   const clickedElement = event.target;
+  const interestId = clickedElement.dataset.id;
+  const interestIndex = interests.findIndex((interest) => {
+    return interest.id === interestId;
+  });
+
+  if (interestIndex === -1) {
+    return;
+  }
 
   if (clickedElement.classList.contains("edit-interest")) {
-    editingInterestIndex = Number(clickedElement.dataset.index);
-    interestInput.value = interests[editingInterestIndex];
+    editingInterestId = interests[interestIndex].id;
+    interestInput.value = interests[interestIndex].name;
     interestInput.focus();
     updateInterestEditorMode();
     showMessage(interestMessage, "正在编辑兴趣，修改后点击“保存修改”。", "info");
@@ -774,23 +841,27 @@ interestList.addEventListener("click", (event) => {
   }
 
   if (clickedElement.classList.contains("delete-interest")) {
-    // Number 会把字符串形式的下标转成数字。
-    const interestIndex = Number(clickedElement.dataset.index);
-    const interestText = interests[interestIndex];
+    const interestName = interests[interestIndex].name;
 
     // splice 会从数组里删除指定位置的数据。
     interests.splice(interestIndex, 1);
-    editingInterestIndex = null;
+
+    // 因为编辑状态记录的是 id，所以删除其他兴趣不会影响当前编辑对象。
+    if (interestId === editingInterestId) {
+      editingInterestId = null;
+      interestInput.value = "";
+    }
+
     saveInterests();
     renderInterests();
     updateInterestEditorMode();
-    showMessage(interestMessage, `已删除兴趣：${interestText}`, "success");
+    showMessage(interestMessage, `已删除兴趣：${interestName}`, "success");
   }
 });
 
 // 取消编辑时，清空输入框并恢复为新增模式。
 cancelEditButton.addEventListener("click", () => {
-  editingInterestIndex = null;
+  editingInterestId = null;
   interestInput.value = "";
   updateInterestEditorMode();
   showMessage(interestMessage, "已取消编辑。", "info");
@@ -806,9 +877,10 @@ resetInterestsButton.addEventListener("click", () => {
     return;
   }
 
-  // 复制默认数组，避免直接共用 defaultInterests 这个原始数组。
-  interests = [...defaultInterests];
-  editingInterestIndex = null;
+  // 复制默认对象数组，避免直接共用 defaultInterests 这个原始数组。
+  interests = cloneDefaultInterests();
+  editingInterestId = null;
+  interestInput.value = "";
   saveInterests();
   renderInterests();
   updateInterestEditorMode();
@@ -831,7 +903,7 @@ clearInterestsButton.addEventListener("click", () => {
 
   // 清空数据源，并保存空数组。
   interests = [];
-  editingInterestIndex = null;
+  editingInterestId = null;
   interestInput.value = "";
   saveInterests();
   renderInterests();
