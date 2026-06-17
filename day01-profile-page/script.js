@@ -20,6 +20,8 @@ const interestPinnedFilter = document.querySelector("#interestPinnedFilter");
 const interestColorFilter = document.querySelector("#interestColorFilter");
 // 找到兴趣筛选说明。
 const interestFilterSummary = document.querySelector("#interestFilterSummary");
+// 找到清空兴趣筛选按钮。
+const clearInterestFiltersButton = document.querySelector("#clearInterestFiltersButton");
 // 找到新增兴趣的输入框。
 const interestInput = document.querySelector("#interestInput");
 // 找到兴趣名称剩余字数提示。
@@ -660,6 +662,15 @@ function renderInterests() {
   });
 }
 
+// 清空兴趣筛选条件，恢复显示全部兴趣。
+function clearInterestFilters() {
+  searchInput.value = "";
+  interestPinnedFilter.value = "all";
+  interestColorFilter.value = "all";
+  renderInterests();
+  showMessage(interestMessage, "已清空兴趣筛选条件。", "info");
+}
+
 // 清空兴趣表单，并把颜色选择恢复到默认蓝色。
 function clearInterestForm() {
   interestInput.value = "";
@@ -923,6 +934,11 @@ interestPinnedFilter.addEventListener("change", () => {
 // 切换颜色筛选时，重新渲染兴趣列表。
 interestColorFilter.addEventListener("change", () => {
   renderInterests();
+});
+
+// 点击按钮时，清空所有兴趣筛选条件。
+clearInterestFiltersButton.addEventListener("click", () => {
+  clearInterestFilters();
 });
 
 // 事件委托：把点击监听放在 ul 上，统一处理所有删除按钮。
