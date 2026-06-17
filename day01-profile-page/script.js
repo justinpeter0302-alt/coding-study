@@ -20,6 +20,8 @@ const interestPinnedFilter = document.querySelector("#interestPinnedFilter");
 const interestFilterSummary = document.querySelector("#interestFilterSummary");
 // 找到新增兴趣的输入框。
 const interestInput = document.querySelector("#interestInput");
+// 找到兴趣名称剩余字数提示。
+const interestNameCounter = document.querySelector("#interestNameCounter");
 // 找到兴趣颜色选择框。
 const interestColorInput = document.querySelector("#interestColorInput");
 // 找到新增兴趣的按钮。
@@ -75,6 +77,8 @@ const infoCardsStorageKey = "day01-info-cards";
 const cardTitleMaxLength = 12;
 // 学习卡片正文最长允许 60 个字符。
 const cardTextMaxLength = 60;
+// 兴趣名称最长允许 12 个字符。
+const interestNameMaxLength = 12;
 // 对象适合保存一组有关联的信息，比如一张卡片的标题和正文。
 const defaultInfoCards = [
   {
@@ -430,6 +434,11 @@ function updateCardTextCounter() {
   updateCounter(cardTextInput, cardTextCounter, cardTextMaxLength, 5, "正文还可以输入");
 }
 
+// 更新兴趣名称的剩余字数提示。
+function updateInterestNameCounter() {
+  updateCounter(interestInput, interestNameCounter, interestNameMaxLength, 2);
+}
+
 // 清空卡片表单，并把选择框恢复到默认状态。
 function clearCardForm() {
   cardTitleInput.value = "";
@@ -642,6 +651,7 @@ function renderInterests() {
 function clearInterestForm() {
   interestInput.value = "";
   interestColorInput.value = "blue";
+  updateInterestNameCounter();
 }
 
 // 当用户点击按钮时，执行里面的代码。
@@ -674,6 +684,11 @@ function saveInterest() {
 
   if (newInterest === "") {
     showMessage(interestMessage, "请先输入一个兴趣。", "error");
+    return;
+  }
+
+  if (newInterest.length > interestNameMaxLength) {
+    showMessage(interestMessage, `兴趣名称不能超过 ${interestNameMaxLength} 个字。`, "error");
     return;
   }
 
@@ -877,6 +892,11 @@ interestInput.addEventListener("keydown", (event) => {
   }
 });
 
+// 输入兴趣名称时，实时更新剩余字数。
+interestInput.addEventListener("input", () => {
+  updateInterestNameCounter();
+});
+
 // 输入搜索关键词时，实时重新渲染可见列表。
 searchInput.addEventListener("input", () => {
   renderInterests();
@@ -920,6 +940,7 @@ interestList.addEventListener("click", (event) => {
     interestColorInput.value = interests[interestIndex].color;
     interestInput.focus();
     updateInterestEditorMode();
+    updateInterestNameCounter();
     showMessage(interestMessage, "正在编辑兴趣，修改后点击“保存修改”。", "info");
     return;
   }
@@ -1002,3 +1023,4 @@ updateInterestEditorMode();
 updateCardEditorMode();
 updateCardTitleCounter();
 updateCardTextCounter();
+updateInterestNameCounter();

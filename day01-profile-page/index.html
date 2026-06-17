@@ -104,7 +104,7 @@
         <div class="interest-editor">
           <label for="interestInput">添加新的兴趣</label>
           <div class="interest-actions">
-            <input id="interestInput" type="text" placeholder="例如：阅读" />
+            <input id="interestInput" type="text" maxlength="12" placeholder="例如：阅读" />
             <select id="interestColorInput">
               <option value="blue">蓝色</option>
               <option value="green">绿色</option>
@@ -121,6 +121,7 @@
               取消编辑
             </button>
           </div>
+          <p id="interestNameCounter" class="counter">还可以输入 12 个字</p>
           <p id="interestMessage" class="message">输入兴趣后，可以把它加入列表。</p>
         </div>
 
