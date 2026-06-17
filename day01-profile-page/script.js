@@ -54,6 +54,8 @@ const cardTextCounter = document.querySelector("#cardTextCounter");
 const cardLevelInput = document.querySelector("#cardLevelInput");
 // 找到新增卡片按钮。
 const addCardButton = document.querySelector("#addCardButton");
+// 找到取消编辑卡片按钮。
+const cancelCardEditButton = document.querySelector("#cancelCardEditButton");
 // 找到重置卡片按钮。
 const resetCardsButton = document.querySelector("#resetCardsButton");
 // 找到卡片区域提示信息。
@@ -90,6 +92,8 @@ let infoCards = loadInfoCards();
 let interests = loadInterests();
 // null 表示当前没有在编辑；数字表示正在编辑的兴趣下标。
 let editingInterestIndex = null;
+// null 表示当前没有在编辑卡片；数字表示正在编辑的卡片下标。
+let editingCardIndex = null;
 
 // 从浏览器本地读取兴趣数组。
 function loadInterests() {
@@ -151,6 +155,18 @@ function updateInterestEditorMode() {
 
   addInterestButton.textContent = "保存修改";
   cancelEditButton.classList.remove("hidden");
+}
+
+// 根据是否处于卡片编辑状态，更新按钮文字和取消按钮显示。
+function updateCardEditorMode() {
+  if (editingCardIndex === null) {
+    addCardButton.textContent = "添加卡片";
+    cancelCardEditButton.classList.add("hidden");
+    return;
+  }
+
+  addCardButton.textContent = "保存修改";
+  cancelCardEditButton.classList.remove("hidden");
 }
 
 // 根据卡片完成状态更新统计信息。
@@ -263,6 +279,7 @@ function renderInfoCards() {
     const title = document.createElement("h2");
     const level = document.createElement("span");
     const status = document.createElement("span");
+    const editButton = document.createElement("button");
     const toggleButton = document.createElement("button");
     const deleteButton = document.createElement("button");
     const text = document.createElement("p");
@@ -273,6 +290,10 @@ function renderInfoCards() {
     level.className = `level-badge level-${card.level}`;
     status.textContent = card.completed ? "已完成" : "未完成";
     status.className = card.completed ? "status-badge completed" : "status-badge pending";
+    editButton.textContent = "编辑";
+    editButton.type = "button";
+    editButton.className = "edit-card";
+    editButton.dataset.index = index;
     toggleButton.textContent = card.completed ? "取消完成" : "标记完成";
     toggleButton.type = "button";
     toggleButton.className = "toggle-card";
@@ -286,7 +307,7 @@ function renderInfoCards() {
     cardTitleGroup.className = "card-title-group";
     cardTitleGroup.append(title, level, status);
     cardHeader.className = "card-header";
-    cardHeader.append(cardTitleGroup, toggleButton, deleteButton);
+    cardHeader.append(cardTitleGroup, editButton, toggleButton, deleteButton);
     article.append(cardHeader, text);
     infoGrid.append(article);
   });
@@ -341,6 +362,28 @@ function addInfoCard() {
     return;
   }
 
+  if (editingCardIndex !== null) {
+    const oldTitle = infoCards[editingCardIndex].title;
+
+    // 编辑时只替换标题、正文和等级，保留原来的完成状态。
+    infoCards[editingCardIndex] = {
+      ...infoCards[editingCardIndex],
+      title,
+      text,
+      level,
+    };
+    editingCardIndex = null;
+    saveInfoCards();
+    renderInfoCards();
+    updateCardEditorMode();
+    showMessage(cardMessage, `已将“${oldTitle}”修改为“${title}”。`, "success");
+    cardTitleInput.value = "";
+    cardTextInput.value = "";
+    updateCardTitleCounter();
+    updateCardTextCounter();
+    return;
+  }
+
   // 新卡片是一个对象，对象里保存这张卡片需要的多个字段。
   const newCard = {
     title,
@@ -359,6 +402,18 @@ function addInfoCard() {
   updateCardTextCounter();
 }
 
+// 退出卡片编辑模式，并清空表单。
+function cancelCardEdit() {
+  editingCardIndex = null;
+  cardTitleInput.value = "";
+  cardTextInput.value = "";
+  cardLevelInput.value = "基础";
+  updateCardEditorMode();
+  updateCardTitleCounter();
+  updateCardTextCounter();
+  showMessage(cardMessage, "已取消编辑卡片。", "info");
+}
+
 // 恢复默认学习卡片。
 function resetInfoCards() {
   const shouldReset = confirm("确定要重置学习卡片吗？");
@@ -372,8 +427,14 @@ function resetInfoCards() {
   infoCards = defaultInfoCards.map((card) => {
     return { ...card };
   });
+  editingCardIndex = null;
+  cardTitleInput.value = "";
+  cardTextInput.value = "";
   saveInfoCards();
   renderInfoCards();
+  updateCardEditorMode();
+  updateCardTitleCounter();
+  updateCardTextCounter();
   showMessage(cardMessage, "学习卡片已恢复默认。", "success");
 }
 
@@ -564,6 +625,11 @@ resetCardsButton.addEventListener("click", () => {
   resetInfoCards();
 });
 
+// 点击按钮时，取消正在编辑的学习卡片。
+cancelCardEditButton.addEventListener("click", () => {
+  cancelCardEdit();
+});
+
 // 在卡片正文输入框里按 Enter，也新增卡片。
 cardTextInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
@@ -576,6 +642,21 @@ infoGrid.addEventListener("click", (event) => {
   const clickedElement = event.target;
 
   const cardIndex = Number(clickedElement.dataset.index);
+
+  if (clickedElement.classList.contains("edit-card")) {
+    const card = infoCards[cardIndex];
+
+    editingCardIndex = cardIndex;
+    cardTitleInput.value = card.title;
+    cardTextInput.value = card.text;
+    cardLevelInput.value = card.level;
+    cardTitleInput.focus();
+    updateCardEditorMode();
+    updateCardTitleCounter();
+    updateCardTextCounter();
+    showMessage(cardMessage, "正在编辑卡片，修改后点击“保存修改”。", "info");
+    return;
+  }
 
   if (clickedElement.classList.contains("toggle-card")) {
     infoCards[cardIndex].completed = !infoCards[cardIndex].completed;
@@ -598,8 +679,10 @@ infoGrid.addEventListener("click", (event) => {
   }
 
   infoCards.splice(cardIndex, 1);
+  editingCardIndex = null;
   saveInfoCards();
   renderInfoCards();
+  updateCardEditorMode();
   showMessage(cardMessage, `已删除卡片：${cardTitle}`, "success");
 });
 
@@ -704,5 +787,6 @@ clearInterestsButton.addEventListener("click", () => {
 renderInfoCards();
 renderInterests();
 updateInterestEditorMode();
+updateCardEditorMode();
 updateCardTitleCounter();
 updateCardTextCounter();

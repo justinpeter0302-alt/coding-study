@@ -187,7 +187,7 @@ article {
 
 .card-actions {
   display: grid;
-  grid-template-columns: 1fr 1.5fr auto auto;
+  grid-template-columns: 1fr 1.5fr auto auto auto;
   gap: 10px;
 }
 
@@ -257,11 +257,23 @@ article p {
   background: #fff4d6;
 }
 
+.edit-card,
 .toggle-card,
 .delete-card {
   min-height: 32px;
   padding: 0 10px;
   font-size: 14px;
+}
+
+.edit-card {
+  border: 1px solid #c7d2ff;
+  color: #2541b2;
+  background: #ffffff;
+}
+
+.edit-card:hover {
+  color: #ffffff;
+  background: #2541b2;
 }
 
 .toggle-card {
@@ -458,12 +470,14 @@ body.dark .status-badge.pending {
   background: #4a3412;
 }
 
+body.dark .edit-card,
 body.dark .toggle-card {
   border-color: #4b5f93;
   color: #dce5ff;
   background: #1b202b;
 }
 
+body.dark .edit-card:hover,
 body.dark .toggle-card:hover {
   background: #2f57eb;
 }
