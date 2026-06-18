@@ -701,6 +701,26 @@ function isDuplicateInterestName(name) {
   });
 }
 
+// 校验兴趣名称是否可以保存，失败时直接显示对应提示。
+function isValidInterestName(name) {
+  if (name === "") {
+    showMessage(interestMessage, "请先输入一个兴趣。", "error");
+    return false;
+  }
+
+  if (name.length > interestNameMaxLength) {
+    showMessage(interestMessage, `兴趣名称不能超过 ${interestNameMaxLength} 个字。`, "error");
+    return false;
+  }
+
+  if (isDuplicateInterestName(name)) {
+    showMessage(interestMessage, `“${name}”已经在兴趣列表里了。`, "error");
+    return false;
+  }
+
+  return true;
+}
+
 // 根据兴趣 id 找到它在 interests 数组里的位置。
 function findInterestIndexById(id) {
   return interests.findIndex((interest) => {
@@ -788,19 +808,7 @@ function saveInterest() {
   const newInterest = interestInput.value.trim();
   const newInterestColor = interestColorInput.value;
 
-  if (newInterest === "") {
-    showMessage(interestMessage, "请先输入一个兴趣。", "error");
-    return;
-  }
-
-  if (newInterest.length > interestNameMaxLength) {
-    showMessage(interestMessage, `兴趣名称不能超过 ${interestNameMaxLength} 个字。`, "error");
-    return;
-  }
-
-  // 如果兴趣已经存在，就提示用户，并停止新增。
-  if (isDuplicateInterestName(newInterest)) {
-    showMessage(interestMessage, `“${newInterest}”已经在兴趣列表里了。`, "error");
+  if (!isValidInterestName(newInterest)) {
     return;
   }
 
