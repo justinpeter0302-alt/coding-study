@@ -708,6 +708,16 @@ function findInterestIndexById(id) {
   });
 }
 
+// 创建一条完整的兴趣数据，统一管理兴趣对象的默认字段。
+function createInterest(name, color) {
+  return {
+    id: createInterestId(),
+    name,
+    color,
+    pinned: false,
+  };
+}
+
 // ===== 基础交互 =====
 
 // 当用户点击按钮时，执行里面的代码。
@@ -781,12 +791,7 @@ function saveInterest() {
   }
 
   // push 会把新内容添加到数组末尾。
-  interests.push({
-    id: createInterestId(),
-    name: newInterest,
-    color: newInterestColor,
-    pinned: false,
-  });
+  interests.push(createInterest(newInterest, newInterestColor));
   saveInterests();
   renderInterests();
   showMessage(interestMessage, `已添加兴趣：${newInterest}`, "success");
