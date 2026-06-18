@@ -690,6 +690,17 @@ function clearInterestForm() {
   updateInterestNameCounter();
 }
 
+// 判断兴趣名称是否重复；编辑时跳过正在编辑的那一项。
+function isDuplicateInterestName(name) {
+  return interests.some((interest) => {
+    if (interest.id === editingInterestId) {
+      return false;
+    }
+
+    return interest.name.toLowerCase() === name.toLowerCase();
+  });
+}
+
 // ===== 基础交互 =====
 
 // 当用户点击按钮时，执行里面的代码。
@@ -730,18 +741,8 @@ function saveInterest() {
     return;
   }
 
-  // some 会检查数组中是否至少有一项满足条件。
-  const isDuplicate = interests.some((interest) => {
-    // 编辑时要跳过自己，否则原名字也会被当成重复。
-    if (interest.id === editingInterestId) {
-      return false;
-    }
-
-    return interest.name.toLowerCase() === newInterest.toLowerCase();
-  });
-
   // 如果兴趣已经存在，就提示用户，并停止新增。
-  if (isDuplicate) {
+  if (isDuplicateInterestName(newInterest)) {
     showMessage(interestMessage, `“${newInterest}”已经在兴趣列表里了。`, "error");
     return;
   }
