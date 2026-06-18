@@ -1,3 +1,5 @@
+// ===== DOM 元素 =====
+
 // 找到 HTML 中 id 为 themeButton 的按钮。
 const themeButton = document.querySelector("#themeButton");
 // 找到显示名字的 span。
@@ -73,6 +75,8 @@ const resetCardsButton = document.querySelector("#resetCardsButton");
 // 找到卡片区域提示信息。
 const cardMessage = document.querySelector("#cardMessage");
 
+// ===== 配置和默认数据 =====
+
 // localStorage 只能保存字符串，所以我们用一个固定 key 找到兴趣数据。
 const interestsStorageKey = "day01-interests";
 // 信息卡片也需要一个独立 key，避免和兴趣数据混在一起。
@@ -129,6 +133,8 @@ let interests = loadInterests();
 let editingInterestId = null;
 // null 表示当前没有在编辑卡片；字符串表示正在编辑的卡片 id。
 let editingCardId = null;
+
+// ===== 数据读取和保存 =====
 
 // 从浏览器本地读取兴趣数组。
 function loadInterests() {
@@ -241,6 +247,8 @@ function saveInfoCards() {
   localStorage.setItem(infoCardsStorageKey, JSON.stringify(infoCards));
 }
 
+// ===== 通用工具和状态 =====
+
 // 统一更新提示信息，type 用来控制提示颜色。
 function showMessage(element, text, type = "info") {
   element.textContent = text;
@@ -270,6 +278,8 @@ function updateCardEditorMode() {
   addCardButton.textContent = "保存修改";
   cancelCardEditButton.classList.remove("hidden");
 }
+
+// ===== 学习卡片模块 =====
 
 // 根据卡片完成状态更新统计信息。
 function renderCardStats() {
@@ -560,6 +570,8 @@ function resetInfoCards() {
   showMessage(cardMessage, "学习卡片已恢复默认。", "success");
 }
 
+// ===== 兴趣模块 =====
+
 // 根据当前兴趣筛选条件，生成一段说明文字。
 function renderInterestFilterSummary(searchKeyword, pinnedFilter, colorFilter) {
   const summaryParts = [];
@@ -678,6 +690,8 @@ function clearInterestForm() {
   updateInterestNameCounter();
 }
 
+// ===== 基础交互 =====
+
 // 当用户点击按钮时，执行里面的代码。
 themeButton.addEventListener("click", () => {
   // toggle 会自动切换 dark class：没有就添加，有就移除。
@@ -772,6 +786,8 @@ function saveInterest() {
   showMessage(interestMessage, `已添加兴趣：${newInterest}`, "success");
   clearInterestForm();
 }
+
+// ===== 事件绑定 =====
 
 // 当用户点击“保存名字”按钮时，读取输入框内容并更新页面。
 saveNameButton.addEventListener("click", () => {
@@ -1049,6 +1065,8 @@ clearInterestsButton.addEventListener("click", () => {
   updateInterestEditorMode();
   showMessage(interestMessage, "全部兴趣已清空。", "success");
 });
+
+// ===== 页面初始化 =====
 
 // 页面刚打开时，先把默认兴趣渲染出来。
 renderInfoCards();
