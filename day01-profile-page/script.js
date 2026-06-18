@@ -701,6 +701,13 @@ function isDuplicateInterestName(name) {
   });
 }
 
+// 根据兴趣 id 找到它在 interests 数组里的位置。
+function findInterestIndexById(id) {
+  return interests.findIndex((interest) => {
+    return interest.id === id;
+  });
+}
+
 // ===== 基础交互 =====
 
 // 当用户点击按钮时，执行里面的代码。
@@ -748,9 +755,7 @@ function saveInterest() {
   }
 
   if (editingInterestId !== null) {
-    const editingInterestIndex = interests.findIndex((interest) => {
-      return interest.id === editingInterestId;
-    });
+    const editingInterestIndex = findInterestIndexById(editingInterestId);
 
     if (editingInterestIndex === -1) {
       editingInterestId = null;
@@ -963,9 +968,7 @@ interestList.addEventListener("click", (event) => {
   // event.target 表示用户实际点击到的元素。
   const clickedElement = event.target;
   const interestId = clickedElement.dataset.id;
-  const interestIndex = interests.findIndex((interest) => {
-    return interest.id === interestId;
-  });
+  const interestIndex = findInterestIndexById(interestId);
 
   if (interestIndex === -1) {
     return;
