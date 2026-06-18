@@ -718,6 +718,15 @@ function createInterest(name, color) {
   };
 }
 
+// 更新指定位置的兴趣，保留原来的 id 和置顶状态。
+function updateInterest(index, name, color) {
+  interests[index] = {
+    ...interests[index],
+    name,
+    color,
+  };
+}
+
 // ===== 基础交互 =====
 
 // 当用户点击按钮时，执行里面的代码。
@@ -776,11 +785,7 @@ function saveInterest() {
 
     const oldInterestName = interests[editingInterestIndex].name;
 
-    interests[editingInterestIndex] = {
-      ...interests[editingInterestIndex],
-      name: newInterest,
-      color: newInterestColor,
-    };
+    updateInterest(editingInterestIndex, newInterest, newInterestColor);
     editingInterestId = null;
     saveInterests();
     renderInterests();
