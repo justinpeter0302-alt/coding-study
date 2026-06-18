@@ -727,6 +727,37 @@ function updateInterest(index, name, color) {
   };
 }
 
+// 新增兴趣，并完成保存、渲染和提示。
+function addInterest(name, color) {
+  interests.push(createInterest(name, color));
+  saveInterests();
+  renderInterests();
+  showMessage(interestMessage, `已添加兴趣：${name}`, "success");
+  clearInterestForm();
+}
+
+// 编辑当前选中的兴趣，并完成保存、渲染和提示。
+function editInterest(name, color) {
+  const editingInterestIndex = findInterestIndexById(editingInterestId);
+
+  if (editingInterestIndex === -1) {
+    editingInterestId = null;
+    updateInterestEditorMode();
+    showMessage(interestMessage, "正在编辑的兴趣不存在，请重新选择。", "error");
+    return;
+  }
+
+  const oldInterestName = interests[editingInterestIndex].name;
+
+  updateInterest(editingInterestIndex, name, color);
+  editingInterestId = null;
+  saveInterests();
+  renderInterests();
+  updateInterestEditorMode();
+  showMessage(interestMessage, `已将“${oldInterestName}”修改为“${name}”`, "success");
+  clearInterestForm();
+}
+
 // ===== 基础交互 =====
 
 // 当用户点击按钮时，执行里面的代码。
@@ -774,33 +805,11 @@ function saveInterest() {
   }
 
   if (editingInterestId !== null) {
-    const editingInterestIndex = findInterestIndexById(editingInterestId);
-
-    if (editingInterestIndex === -1) {
-      editingInterestId = null;
-      updateInterestEditorMode();
-      showMessage(interestMessage, "正在编辑的兴趣不存在，请重新选择。", "error");
-      return;
-    }
-
-    const oldInterestName = interests[editingInterestIndex].name;
-
-    updateInterest(editingInterestIndex, newInterest, newInterestColor);
-    editingInterestId = null;
-    saveInterests();
-    renderInterests();
-    updateInterestEditorMode();
-    showMessage(interestMessage, `已将“${oldInterestName}”修改为“${newInterest}”`, "success");
-    clearInterestForm();
+    editInterest(newInterest, newInterestColor);
     return;
   }
 
-  // push 会把新内容添加到数组末尾。
-  interests.push(createInterest(newInterest, newInterestColor));
-  saveInterests();
-  renderInterests();
-  showMessage(interestMessage, `已添加兴趣：${newInterest}`, "success");
-  clearInterestForm();
+  addInterest(newInterest, newInterestColor);
 }
 
 // ===== 事件绑定 =====
